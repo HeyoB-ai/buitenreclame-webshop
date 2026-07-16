@@ -5,8 +5,8 @@
 
 import React, { useState, useMemo } from 'react';
 import { Location, IntakeAnswers, CartItem, TargetRegion, LocationType, SessionCreative } from './types';
-import { MOCK_LOCATIONS, TARGET_AUDIENCES } from './data/mockData';
-import { ratioForType, composeToDataUrl, imageCoverToRatioDataUrl } from './lib/posterComposer';
+import { CATALOGUE } from './data/catalogue';
+import { posterRatio, composeToDataUrl, imageCoverToRatioDataUrl } from './lib/posterComposer';
 import LocationCard from './components/LocationCard';
 import LocationDetailModal from './components/LocationDetailModal';
 import AICreationModal from './components/AICreationModal';
@@ -14,8 +14,8 @@ import InteractiveMap from './components/InteractiveMap';
 import CartAndCheckout from './components/CartAndCheckout';
 import Logo from './components/Logo';
 import Landing from './components/landing/Landing';
-import type { Screen } from './data/screens';
-import { screenToLocation } from './lib/adapters';
+import type { Gemeente, Product } from './data/gemeenten';
+import { gemeenteToLocation } from './lib/adapters';
 import { ShoppingBag, Map, List, Filter, RefreshCw } from 'lucide-react';
 
 const isLocationInRegion = (loc: Location, region: TargetRegion): boolean => {
@@ -73,7 +73,7 @@ export default function App() {
   const [cart, setCart] = useState<CartItem[]>([]);
   
   // Filtering & View states
-  const [mediaFilter, setMediaFilter] = useState<'all' | 'abri' | 'digital'>('all');
+  const [productFilter, setProductFilter] = useState<'all' | Product>('all');
   const [cityFilter, setCityFilter] = useState<string>('all');
   const [showOnlyRecommended, setShowOnlyRecommended] = useState<boolean>(true);
   const [layoutMode, setLayoutMode] = useState<'grid' | 'map'>('grid');
@@ -157,7 +157,7 @@ export default function App() {
   // Re-render a session creative for a target screen ratio (no stretching):
   // AI posters are re-composed at the ratio; uploads are cover-cropped.
   const materialize = async (sc: SessionCreative, targetType: LocationType): Promise<CartItem['creative']> => {
-    const ratio = ratioForType(targetType);
+    const ratio = posterRatio();
     if (sc.kind === 'ai' && sc.poster) {
       const previewUrl = await composeToDataUrl({
         photoUrl: sc.poster.photoUrl, ratio, fields: sc.poster.fields, template: sc.poster.template, theme: sc.poster.theme,
@@ -216,7 +216,7 @@ export default function App() {
     if (!answers) return [];
     
     // 1. Filter by target audience matching tags
-    let matched = MOCK_LOCATIONS.filter((loc) =>
+    let matched = CATALOGUE.filter((loc) =>
       loc.recommendedFor.includes(answers.targetAudience)
     );
     
@@ -234,9 +234,9 @@ export default function App() {
 
   // Compute final filtered locations list
   const filteredLocations = useMemo(() => {
-    return MOCK_LOCATIONS.filter((loc) => {
-      // 1. Media format type filter (Problem #3)
-      if (mediaFilter !== 'all' && loc.type !== mediaFilter) {
+    return CATALOGUE.filter((loc) => {
+      // 1. Product filter
+      if (productFilter !== 'all' && loc.type !== productFilter) {
         return false;
       }
       // 2. City filter
@@ -249,24 +249,19 @@ export default function App() {
       }
       return true;
     });
-  }, [mediaFilter, cityFilter, showOnlyRecommended, recommendedIds, answers]);
+  }, [productFilter, cityFilter, showOnlyRecommended, recommendedIds, answers]);
 
   // Unique list of cities for the filter menu
   const availableCities = useMemo(() => {
-    const cities = MOCK_LOCATIONS.map((loc) => loc.city);
+    const cities = CATALOGUE.map((loc) => loc.city);
     return ['all', ...Array.from(new Set(cities))];
   }, []);
 
-  const currentAudienceName = useMemo(() => {
-    if (!answers) return '';
-    return TARGET_AUDIENCES.find((ta) => ta.id === answers.targetAudience)?.name || answers.targetAudience;
-  }, [answers]);
+  // --- Landing (planner) → existing cart, via the gemeente→Location adapter ---
 
-  // --- Landing (planner) → existing cart, via the screen→Location adapter ---
-
-  // Add one planned screen to the cart (upsert: refresh weeks if already there).
-  const handleAddScreen = (screen: Screen, weeks: number) => {
-    const location = screenToLocation(screen);
+  // Add one planned gemeente to the cart (upsert: refresh weeks if already there).
+  const handleAddGemeente = (gemeente: Gemeente, product: Product, weeks: number) => {
+    const location = gemeenteToLocation(gemeente, product);
     setCart((prev) => {
       const idx = prev.findIndex((item) => item.location.id === location.id);
       if (idx > -1) {
@@ -276,12 +271,12 @@ export default function App() {
     });
   };
 
-  // Add every selected screen at once, then jump to the cart.
-  const handleBookPlan = (screens: Screen[], weeks: number) => {
+  // Add every selected gemeente at once, then jump to the cart.
+  const handleBookPlan = (gemeenten: Gemeente[], product: Product, weeks: number) => {
     setCart((prev) => {
       const next = [...prev];
-      for (const screen of screens) {
-        const location = screenToLocation(screen);
+      for (const gemeente of gemeenten) {
+        const location = gemeenteToLocation(gemeente, product);
         const idx = next.findIndex((item) => item.location.id === location.id);
         if (idx > -1) next[idx] = { ...next[idx], weeks };
         else next.push({ location, weeks });
@@ -292,15 +287,16 @@ export default function App() {
   };
 
   // Open the existing detail modal with the adapted location.
-  const handleOpenScreenDetail = (screen: Screen) => {
-    setSelectedLocationForDetail(screenToLocation(screen));
+  const handleOpenGemeenteDetail = (gemeente: Gemeente, product: Product) => {
+    setSelectedLocationForDetail(gemeenteToLocation(gemeente, product));
   };
 
-  // Screen ids currently in the cart (adapter prefixes location ids with "screen-").
-  const addedScreenIds = cart
+  // Gemeente ids currently in the cart. The adapter builds ids as
+  // `gem-<gemeenteId>-<product>`, so strip the prefix and the product suffix.
+  const addedGemeenteIds = cart
     .map((item) => item.location.id)
-    .filter((id) => id.startsWith('screen-'))
-    .map((id) => id.slice('screen-'.length));
+    .filter((id) => id.startsWith('gem-'))
+    .map((id) => id.slice('gem-'.length).replace(/-(A0-display|Driehoeksbord)$/, ''));
 
   // NEW LANDING FLOW (replaces the old intake view)
   if (view === 'intake') {
@@ -308,11 +304,11 @@ export default function App() {
       <>
         <Landing
           cartCount={cart.length}
-          addedIds={addedScreenIds}
+          addedIds={addedGemeenteIds}
           onOpenCart={() => setView('cart')}
-          onAddScreen={handleAddScreen}
+          onAddGemeente={handleAddGemeente}
           onBookPlan={handleBookPlan}
-          onOpenScreenDetail={handleOpenScreenDetail}
+          onOpenGemeenteDetail={handleOpenGemeenteDetail}
         />
 
         {selectedLocationForDetail && (
@@ -351,8 +347,6 @@ export default function App() {
                   <span className="font-bold text-slate-800 max-w-[150px] truncate" title={answers.businessType}>
                     {answers.businessType}
                   </span>
-                  <span className="text-slate-300">|</span>
-                  <span className="text-blue-700 font-medium">{currentAudienceName}</span>
                 </div>
               </div>
               
@@ -417,7 +411,7 @@ export default function App() {
               <div className="md:hidden bg-white border border-slate-200 p-4 rounded-2xl space-y-2 flex justify-between items-center text-xs shadow-xs">
                 <div className="space-y-1">
                   <span className="text-[9px] font-mono text-slate-500 uppercase block leading-none font-bold">Doelgroep, Regio & Budget</span>
-                  <p className="text-slate-800 font-bold leading-tight">{currentAudienceName}</p>
+                  <p className="text-slate-800 font-bold leading-tight">{answers?.targetAudience ?? ''}</p>
                   <p className="text-slate-500 text-[11px] leading-tight font-medium">
                     Regio:{' '}
                     {answers.region.type === 'land' && 'Hele land'}
@@ -447,7 +441,7 @@ export default function App() {
                   <p className="text-xs text-slate-500">
                     {answers ? (
                       <span>
-                        Op basis van jouw antwoorden hebben we <strong className="text-blue-700 font-semibold">{recommendedLocations.length} locaties</strong> geselecteerd met het hoogste bereik onder <strong className="text-slate-800">{currentAudienceName}</strong> in{' '}
+                        Op basis van jouw antwoorden hebben we <strong className="text-blue-700 font-semibold">{recommendedLocations.length} locaties</strong> geselecteerd met het hoogste bereik onder <strong className="text-slate-800">{answers?.targetAudience ?? ''}</strong> in{' '}
                         <strong className="text-slate-850">
                           {answers.region.type === 'land' && 'heel Nederland'}
                           {answers.region.type === 'provincie' && `de provincie ${answers.region.province}`}
@@ -490,33 +484,33 @@ export default function App() {
               {/* Filtering Controls */}
               <div className="grid grid-cols-1 md:grid-cols-12 gap-4 border-t border-slate-100 pt-4">
                 
-                {/* 1. Media formats filter (Solves Problem #3, showcases combining them) */}
+                {/* 1. Product filter — ESH carries two, both on the same A0 poster. */}
                 <div className="md:col-span-4 space-y-1.5">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 block font-bold">Media Type</span>
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 block font-bold">Product</span>
                   <div className="grid grid-cols-3 bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs">
                     <button
-                      onClick={() => setMediaFilter('all')}
+                      onClick={() => setProductFilter('all')}
                       className={`py-1.5 rounded-lg font-medium text-center transition-all cursor-pointer ${
-                        mediaFilter === 'all' ? 'bg-white text-slate-800 border border-slate-200/60 font-semibold shadow-xs' : 'text-slate-500 hover:text-slate-800'
+                        productFilter === 'all' ? 'bg-white text-slate-800 border border-slate-200/60 font-semibold shadow-xs' : 'text-slate-500 hover:text-slate-800'
                       }`}
                     >
                       Beide
                     </button>
                     <button
-                      onClick={() => setMediaFilter('abri')}
+                      onClick={() => setProductFilter('A0-display')}
                       className={`py-1.5 rounded-lg font-medium text-center transition-all cursor-pointer ${
-                        mediaFilter === 'abri' ? 'bg-amber-500 text-slate-950 font-black shadow-xs' : 'text-slate-500 hover:text-slate-800'
+                        productFilter === 'A0-display' ? 'bg-cyan-500 text-slate-950 font-black shadow-xs' : 'text-slate-500 hover:text-slate-800'
                       }`}
                     >
-                      Abri's
+                      A0-display
                     </button>
                     <button
-                      onClick={() => setMediaFilter('digital')}
+                      onClick={() => setProductFilter('Driehoeksbord')}
                       className={`py-1.5 rounded-lg font-medium text-center transition-all cursor-pointer ${
-                        mediaFilter === 'digital' ? 'bg-cyan-500 text-slate-950 font-black shadow-xs' : 'text-slate-500 hover:text-slate-800'
+                        productFilter === 'Driehoeksbord' ? 'bg-amber-500 text-slate-950 font-black shadow-xs' : 'text-slate-500 hover:text-slate-800'
                       }`}
                     >
-                      Digitaal
+                      Driehoeksbord
                     </button>
                   </div>
                 </div>
@@ -582,7 +576,7 @@ export default function App() {
                     isInCart={cart.some((item) => item.location.id === loc.id)}
                     onViewDetails={(l) => setSelectedLocationForDetail(l)}
                     onToggleCart={(l) => handleToggleCart(l)}
-                    targetAudienceName={answers ? currentAudienceName : undefined}
+                    targetAudienceName={answers?.targetAudience}
                   />
                 ))}
 
@@ -595,7 +589,7 @@ export default function App() {
                     </div>
                     <button
                       onClick={() => {
-                        setMediaFilter('all');
+                        setProductFilter('all');
                         setCityFilter('all');
                         setShowOnlyRecommended(false);
                       }}
@@ -647,7 +641,7 @@ export default function App() {
                 <a href="mailto:info@eshmedia.nl" className="hover:text-cobalt">info@eshmedia.nl</a>
               </div>
             </address>
-            <div>Bereik = unieke mensen, overlap eruit gerekend · prijzen per week</div>
+            <div>Bereik = 65% van de potentiële kopers per gemeente · richtprijzen per week</div>
           </div>
         </div>
       </footer>

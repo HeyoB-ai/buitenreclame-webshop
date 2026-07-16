@@ -59,9 +59,9 @@ export default function LocationDetailModal({
 
             {/* Media badge */}
             <span className={`absolute bottom-4 left-4 text-[10px] font-bold font-mono uppercase tracking-wider px-2.5 py-1 rounded-full shadow ${
-              location.type === 'digital' ? 'bg-cobalt text-white' : 'bg-ink text-white'
+              location.type === 'A0-display' ? 'bg-cobalt text-white' : 'bg-ink text-white'
             }`}>
-              {location.type === 'digital' ? 'Digitaal Scherm' : 'Klassieke Abri (Gedrukt)'}
+              {location.type}
             </span>
           </div>
 

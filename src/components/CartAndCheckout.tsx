@@ -250,9 +250,9 @@ export default function CartAndCheckout({
                   <div className="flex justify-between items-start gap-4">
                     <div>
                       <span className={`text-[9px] font-bold font-mono uppercase tracking-wider px-2 py-0.5 rounded-full ${
-                        item.location.type === 'digital' ? 'bg-cobalt text-white' : 'bg-ink text-white'
+                        item.location.type === 'A0-display' ? 'bg-cobalt text-white' : 'bg-ink text-white'
                       }`}>
-                        {item.location.type === 'digital' ? 'Digitaal Scherm' : 'Klassieke Abri'}
+                        {item.location.type}
                       </span>
                       <h4 className="text-sm font-bold text-ink leading-tight mt-1.5">
                         {item.location.street}, {item.location.city}

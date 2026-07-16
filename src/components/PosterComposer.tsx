@@ -31,7 +31,7 @@ interface Props {
 /** A self-contained canvas that renders one poster (used for the big preview
  *  and the small template thumbnails). Redraws on any input change. */
 function PosterCanvas({
-  width, ratio, fields, template, theme, photo, logo,
+  width, ratio, fields, template, theme, photo, logo, guides = false,
 }: {
   width: number;
   ratio: Ratio;
@@ -40,6 +40,8 @@ function PosterCanvas({
   theme: ThemeKey;
   photo: HTMLImageElement | null;
   logo: HTMLImageElement | null;
+  /** Show the safe-zone guide — big preview only, and never in the export. */
+  guides?: boolean;
 }) {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
@@ -55,10 +57,10 @@ function PosterCanvas({
       if (cancelled) return;
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
-      drawPoster(ctx, { W, H, photo, logo, fields, template, theme });
+      drawPoster(ctx, { W, H, photo, logo, fields, template, theme, ratio, guides });
     })();
     return () => { cancelled = true; };
-  }, [width, ratio.w, ratio.h, fields, template, theme, photo, logo]);
+  }, [width, ratio, fields, template, theme, photo, logo, guides]);
   return <canvas ref={ref} className="w-full h-auto block" />;
 }
 
@@ -121,8 +123,12 @@ export default function PosterComposer({
         {/* Big live preview */}
         <div className="space-y-2">
           <div className="rounded-card-sm overflow-hidden border border-line shadow-soft bg-paper-2 mx-auto" style={{ maxWidth: previewWidth }}>
-            <PosterCanvas width={previewWidth} ratio={ratio} fields={fields} template={template} theme={theme} photo={photoImg} logo={logoImg} />
+            <PosterCanvas width={previewWidth} ratio={ratio} fields={fields} template={template} theme={theme} photo={photoImg} logo={logoImg} guides />
           </div>
+          <p className="text-[10px] text-mist-2 text-center leading-snug px-2">
+            <span className="inline-block align-middle w-3 border-t border-dashed border-cobalt mr-1" />
+            De stippellijn is de veilige zone: het frame valt over de rand, dus tekst blijft erbinnen. De foto mag doorlopen. Deze lijn staat niet op de druk.
+          </p>
           {activeTpl && <p className="text-[10px] text-mist-2 text-center leading-snug px-2">{activeTpl.hint}</p>}
         </div>
 

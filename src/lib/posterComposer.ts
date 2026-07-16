@@ -59,19 +59,66 @@ export const THEMES: Theme[] = [
   { key: 'amber', label: 'Amber', bg: '#DE8A06', accent: '#16213A' },
 ];
 
-export interface Ratio {
-  key: 'digital' | 'abri';
-  label: string;
-  aspect: string; // sent to the image model
-  w: number; // export canvas pixels
-  h: number;
+/** Safe-zone insets in millimetres (the frame overlaps the poster edge). */
+export interface SafeZone {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
 }
 
-/** The poster ratio for the screen this creative hangs on. */
-export function ratioForType(type: 'digital' | 'abri'): Ratio {
-  return type === 'digital'
-    ? { key: 'digital', label: 'digitaal 9:16', aspect: '9:16', w: 1080, h: 1920 }
-    : { key: 'abri', label: 'abri 2:3', aspect: '2:3', w: 1200, h: 1800 };
+export interface Ratio {
+  key: 'a0';
+  label: string;
+  aspect: string; // sent to the image model
+  widthMm: number;
+  heightMm: number;
+  w: number; // export canvas pixels
+  h: number;
+  safe: SafeZone; // mm
+}
+
+/**
+ * ESH carries ONE print format. Both products — the A0-display and the
+ * Driehoeksbord — hang the same A0 sheet (a driehoeksbord is simply a carrier
+ * for A0 posters), so there is a single ratio rather than a per-product table.
+ *
+ * The frame overlaps the poster along every edge, so all text, badges and logos
+ * must stay inside the safe zone: 40 mm left/top/right, 50 mm at the bottom.
+ * A background photo may bleed all the way to the edge.
+ *
+ * `aspect` is the nearest ratio the image model supports: A0 is 1:1.414, and
+ * 3:4 (1:1.333) sits closer to that than 2:3 (1:1.5).
+ */
+export const A0: Ratio = {
+  key: 'a0',
+  label: 'A0-display · 841 × 1189 mm',
+  aspect: '3:4',
+  widthMm: 841,
+  heightMm: 1189,
+  w: 1240,
+  h: 1753, // 1240 × 1189/841, rounded — keeps the A0 ratio within 0.01%
+  safe: { top: 40, right: 40, bottom: 50, left: 40 },
+};
+
+/** The poster ratio. One format for every product ESH sells. */
+export function posterRatio(): Ratio {
+  return A0;
+}
+
+/**
+ * Safe-zone insets converted to pixels for a canvas rendered `W` px wide.
+ * Works for the small preview and the full-size export alike, because the
+ * ratio is preserved (px-per-mm is identical on both axes).
+ */
+export function safeInsetsPx(ratio: Ratio, W: number): SafeZone {
+  const pxPerMm = W / ratio.widthMm;
+  return {
+    top: ratio.safe.top * pxPerMm,
+    right: ratio.safe.right * pxPerMm,
+    bottom: ratio.safe.bottom * pxPerMm,
+    left: ratio.safe.left * pxPerMm,
+  };
 }
 
 // --- colour helpers ---------------------------------------------------------
@@ -341,7 +388,8 @@ interface RC {
   head: string; // cased headline
   bg: string; bgTop: string; bgBot: string; accent: string;
   onBg: string; onAccent: string; onBgMuted: string;
-  pad: number;
+  pad: number; // left / top / right inset for all text — never below the safe zone
+  padBottom: number; // bottom inset — larger, the frame covers more there
   photoPlaceholder: string;
 }
 
@@ -352,7 +400,7 @@ function footerH(rc: RC): number {
 // --- templates --------------------------------------------------------------
 
 function tplFotoBoven(rc: RC) {
-  const { ctx, W, H, pad } = rc;
+  const { ctx, W, H, pad, padBottom } = rc;
   const photoH = H * 0.52;
   drawPhoto(ctx, rc.photo, 0, 0, W, photoH, 0, rc.photoPlaceholder);
   // colour block
@@ -368,7 +416,7 @@ function tplFotoBoven(rc: RC) {
 
   y += drawKicker(ctx, rc.f.kicker.trim(), bx, y, bw, W * 0.032, rgba(rc.onBg, 0.85));
 
-  const bottomLimit = H - pad - fh - (rc.f.offer.trim() ? H * 0.09 : 0) - (rc.f.subline.trim() ? H * 0.07 : 0);
+  const bottomLimit = H - padBottom - fh - (rc.f.offer.trim() ? H * 0.09 : 0) - (rc.f.subline.trim() ? H * 0.07 : 0);
   const head = fitText(ctx, rc.head, { maxW: bw, maxH: bottomLimit - y, maxLines: 3, weight: 800, family: 'Poppins, sans-serif', min: W * 0.06, max: W * 0.135 });
   drawLines(ctx, head, bx, y, rc.onBg, 800, 'Poppins, sans-serif');
   y += head.height + H * 0.02;
@@ -381,11 +429,11 @@ function tplFotoBoven(rc: RC) {
   if (rc.f.offer.trim()) {
     drawBadge(ctx, rc.f.offer.trim(), bx, y, W * 0.058, rc.accent, rc.onAccent);
   }
-  if (fh) drawFooter(ctx, rc.f.url, rc.logo, bx, H - pad - fh, bw, fh, rgba(rc.onBg, 0.9));
+  if (fh) drawFooter(ctx, rc.f.url, rc.logo, bx, H - padBottom - fh, bw, fh, rgba(rc.onBg, 0.9));
 }
 
 function tplFotoInzet(rc: RC) {
-  const { ctx, W, H, pad } = rc;
+  const { ctx, W, H, pad, padBottom } = rc;
   fillGradientV(ctx, 0, 0, W, H, rc.bgTop, rc.bgBot);
   const bx = pad;
   const bw = W - pad * 2;
@@ -403,7 +451,7 @@ function tplFotoInzet(rc: RC) {
   // photo inset panel
   const fh = footerH(rc);
   const panelY = H * 0.40;
-  const panelH = H - panelY - pad - (fh ? fh + pad * 0.4 : 0);
+  const panelH = H - panelY - padBottom - (fh ? fh + pad * 0.4 : 0);
   drawPhoto(ctx, rc.photo, bx, panelY, bw, panelH, W * 0.05, rc.photoPlaceholder);
 
   // offer ribbon over the panel's top-right
@@ -412,11 +460,11 @@ function tplFotoInzet(rc: RC) {
     const b = measureBadge(ctx, rc.f.offer.trim(), fs);
     drawBadge(ctx, rc.f.offer.trim(), bx + bw - b.w * 0.92, panelY - b.h * 0.42, fs, rc.accent, rc.onAccent, -7);
   }
-  if (fh) drawFooter(ctx, rc.f.url, rc.logo, bx, H - pad - fh, bw, fh, rgba(rc.onBg, 0.9));
+  if (fh) drawFooter(ctx, rc.f.url, rc.logo, bx, H - padBottom - fh, bw, fh, rgba(rc.onBg, 0.9));
 }
 
 function tplSplit(rc: RC) {
-  const { ctx, W, H, pad } = rc;
+  const { ctx, W, H, pad, padBottom } = rc;
   const topH = H * 0.46;
   fillGradientV(ctx, 0, 0, W, topH, rc.bgTop, rc.bgBot);
   drawPhoto(ctx, rc.photo, 0, topH, W, H - topH, 0, rc.photoPlaceholder);
@@ -440,18 +488,20 @@ function tplSplit(rc: RC) {
     drawBadge(ctx, rc.f.offer.trim(), bx, topH - b.h / 2, fs, rc.accent, rc.onAccent);
   }
 
-  // footer bar over the photo bottom
+  // Footer bar over the photo bottom. The bar itself bleeds to the edge (it is a
+  // graphic), but its text sits on top of the safe line — the frame covers the
+  // bottom 50 mm.
   const fh = footerH(rc);
   if (fh) {
-    const barH = fh + pad * 0.7;
+    const barH = fh + padBottom;
     ctx.fillStyle = rc.accent;
     ctx.fillRect(0, H - barH, W, barH);
-    drawFooter(ctx, rc.f.url, rc.logo, bx, H - barH + (barH - fh) / 2, bw, fh, rc.onAccent);
+    drawFooter(ctx, rc.f.url, rc.logo, bx, H - padBottom - fh, bw, fh, rc.onAccent);
   }
 }
 
 function tplFotoBalk(rc: RC) {
-  const { ctx, W, H, pad } = rc;
+  const { ctx, W, H, pad, padBottom } = rc;
   drawPhoto(ctx, rc.photo, 0, 0, W, H, 0, rc.photoPlaceholder);
   // depth scrims
   fillGradientV(ctx, 0, 0, W, H * 0.3, rgba('#000000', 0.28), rgba('#000000', 0));
@@ -483,18 +533,18 @@ function tplFotoBalk(rc: RC) {
     drawBadge(ctx, rc.f.offer.trim(), (W - b.w) / 2, cy + bandH * 0.44, fs, rc.accent, rc.onAccent, -3);
   }
 
-  // footer bar
+  // Footer bar — bleeds to the edge, text kept above the safe line.
   const fh = footerH(rc);
   if (fh) {
-    const barH = fh + pad * 0.7;
+    const barH = fh + padBottom;
     ctx.fillStyle = rc.bg;
     ctx.fillRect(0, H - barH, W, barH);
-    drawFooter(ctx, rc.f.url, rc.logo, pad, H - barH + (barH - fh) / 2, W - pad * 2, fh, rc.onBg);
+    drawFooter(ctx, rc.f.url, rc.logo, pad, H - padBottom - fh, W - pad * 2, fh, rc.onBg);
   }
 }
 
 function tplGrafisch(rc: RC) {
-  const { ctx, W, H, pad } = rc;
+  const { ctx, W, H, pad, padBottom } = rc;
   fillGradientV(ctx, 0, 0, W, H, rc.bgTop, rc.bgBot);
   // tasteful decorative accent shapes
   ctx.save();
@@ -527,7 +577,7 @@ function tplGrafisch(rc: RC) {
   if (sub) { y += gap; drawLines(ctx, sub, W / 2, y, rgba(rc.onBg, 0.92), 600, 'Poppins, sans-serif', 'center'); y += sub.height; }
   if (offB) { y += gap * 1.4; drawBadge(ctx, rc.f.offer.trim(), (W - offB.w) / 2, y, offFs, rc.accent, rc.onAccent, -3); }
 
-  if (fh) drawFooter(ctx, rc.f.url, rc.logo, bx, H - pad - fh, bw, fh, rgba(rc.onBg, 0.9));
+  if (fh) drawFooter(ctx, rc.f.url, rc.logo, bx, H - padBottom - fh, bw, fh, rgba(rc.onBg, 0.9));
 }
 
 const PAINTERS: Record<TemplateKey, (rc: RC) => void> = {
@@ -546,11 +596,33 @@ export interface DrawArgs {
   fields: PosterFields;
   template: TemplateKey;
   theme: ThemeKey;
+  ratio?: Ratio; // defaults to A0 — drives the safe zone
+  /** Draw the safe-zone guide. Preview only — never in the export. */
+  guides?: boolean;
+}
+
+/**
+ * Dashed guide showing where the frame stops covering the poster. Editor-only:
+ * it is drawn after the artwork and never runs in `composeToDataUrl`.
+ */
+function drawSafeGuide(ctx: CanvasRenderingContext2D, W: number, H: number, safe: SafeZone) {
+  ctx.save();
+  ctx.strokeStyle = 'rgba(36, 86, 230, 0.5)';
+  ctx.lineWidth = Math.max(1, W * 0.004);
+  ctx.setLineDash([Math.max(3, W * 0.018), Math.max(3, W * 0.014)]);
+  ctx.strokeRect(safe.left, safe.top, W - safe.left - safe.right, H - safe.top - safe.bottom);
+  ctx.restore();
 }
 
 export function drawPoster(ctx: CanvasRenderingContext2D, o: DrawArgs) {
   const theme = THEMES.find((t) => t.key === o.theme) ?? THEMES[0];
   const onBg = readableOn(theme.bg);
+  const ratio = o.ratio ?? A0;
+  const safe = safeInsetsPx(ratio, o.W);
+  // The design pad is what the templates were drawn for; the safe zone is a hard
+  // floor. Taking the max keeps the layout intact AND guarantees the frame never
+  // crops text, whichever is the stricter of the two.
+  const designPad = o.W * 0.07;
   const rc: RC = {
     ctx,
     W: o.W,
@@ -566,11 +638,13 @@ export function drawPoster(ctx: CanvasRenderingContext2D, o: DrawArgs) {
     onBg,
     onAccent: readableOn(theme.accent),
     onBgMuted: onBg === WHITE ? rgba(WHITE, 0.8) : rgba(INK, 0.8),
-    pad: o.W * 0.07,
+    pad: Math.max(designPad, safe.left, safe.right, safe.top),
+    padBottom: Math.max(designPad, safe.bottom),
     photoPlaceholder: shade(theme.bg, 0.28),
   };
   ctx.clearRect(0, 0, o.W, o.H);
   (PAINTERS[o.template] ?? tplFotoBoven)(rc);
+  if (o.guides) drawSafeGuide(ctx, o.W, o.H, safe);
 }
 
 /** Compose the final poster and return a PNG data-URL. */
@@ -597,8 +671,8 @@ export async function composeToDataUrl(opts: {
 
 /**
  * Re-crop a raster image (e.g. an uploaded poster) to a target ratio with a
- * cover fit — no stretching. Used to reuse an upload on a differently-shaped
- * screen (2:3 abri ↔ 9:16 digital).
+ * cover fit — no stretching. Every ESH product is A0, so this now only has to
+ * fit an upload of any shape onto the single A0 sheet.
  */
 export async function imageCoverToRatioDataUrl(src: string, ratio: Ratio): Promise<string> {
   const img = await loadImage(src);

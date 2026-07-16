@@ -8,7 +8,7 @@ import { Location, SessionCreative } from '../types';
 import { X, UploadCloud, Sparkles, CheckCircle2, AlertCircle, RefreshCw, FileText, LayoutTemplate, ShieldCheck, Check, ShieldAlert, Maximize2 } from 'lucide-react';
 import { startCreative, pollCreative } from '../lib/creativeClient';
 import PosterComposer from './PosterComposer';
-import { ratioForType, composeToDataUrl, type PosterFields, type TemplateKey, type ThemeKey } from '../lib/posterComposer';
+import { posterRatio as getPosterRatio, composeToDataUrl, type PosterFields, type TemplateKey, type ThemeKey } from '../lib/posterComposer';
 
 interface AICreationModalProps {
   location: Location;
@@ -65,7 +65,7 @@ export default function AICreationModal({
   const [genError, setGenError] = useState<string | null>(null);
 
   // Poster design (step B). Fields persist across "opnieuw genereren".
-  const posterRatio = ratioForType(location.type);
+  const posterRatio = getPosterRatio();
   const [posterFields, setPosterFields] = useState<PosterFields>({
     kicker: '', headline: '', subline: '', offer: '', url: '', logo: null, uppercase: true,
   });
@@ -243,7 +243,7 @@ export default function AICreationModal({
               Creatie toevoegen voor {location.street}
             </h3>
             <p className="text-xs text-mist">
-              Formaat: <strong className="text-ink">{location.dimensions}</strong> ({location.type === 'digital' ? 'Digitaal' : 'Gedrukte abri'})
+              Formaat: <strong className="text-ink">{location.dimensions}</strong> ({location.type})
             </p>
           </div>
           <button
@@ -305,9 +305,7 @@ export default function AICreationModal({
                     type="button"
                     onClick={() => onUseExisting(sc)}
                     title={`${sc.title} — toepassen op dit scherm`}
-                    className={`group relative shrink-0 w-14 rounded-md overflow-hidden border-2 border-line hover:border-cobalt transition-all cursor-pointer bg-paper-2 ${
-                      sc.ratioType === 'abri' ? 'aspect-[2/3]' : 'aspect-[9/16]'
-                    }`}
+                    className="group relative shrink-0 w-14 rounded-md overflow-hidden border-2 border-line hover:border-cobalt transition-all cursor-pointer bg-paper-2 aspect-[841/1189]"
                   >
                     <img src={sc.previewUrl} alt={sc.title} className="absolute inset-0 w-full h-full object-cover" />
                   </button>
@@ -481,9 +479,7 @@ export default function AICreationModal({
                           key={i}
                           type="button"
                           onClick={() => setSelectedImage(url)}
-                          className={`group relative rounded-card-sm overflow-hidden border-2 transition-all cursor-pointer ${
-                            posterRatio.key === 'abri' ? 'aspect-[2/3]' : 'aspect-[9/16]'
-                          } ${
+                          className={`group relative rounded-card-sm overflow-hidden border-2 transition-all cursor-pointer aspect-[841/1189] ${
                             isSel ? 'border-cobalt ring-2 ring-cobalt/20 shadow-soft' : 'border-line hover:border-cobalt'
                           }`}
                         >

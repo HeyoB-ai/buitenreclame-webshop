@@ -104,7 +104,7 @@ export default function InteractiveMap({
         {locations.map((loc) => {
           const isSelected = selectedLocation?.id === loc.id;
           const isRecommended = recommendedIds.includes(loc.id);
-          const isDigital = loc.type === 'digital';
+          const isDigital = loc.type === 'A0-display';
 
           return (
             <button
@@ -194,12 +194,12 @@ export default function InteractiveMap({
                   <div className="flex justify-between items-start gap-2">
                     <span
                       className={`text-[9px] font-mono font-semibold uppercase px-1.5 py-0.5 rounded ${
-                        displayLoc.type === 'digital'
+                        displayLoc.type === 'A0-display'
                           ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20'
                           : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
                       }`}
                     >
-                      {displayLoc.type === 'digital' ? 'Digitaal Scherm' : 'Abri (Gedrukt)'}
+                      {displayLoc.type}
                     </span>
                     {isRecommended && (
                       <span className="text-[9px] bg-blue-950/80 text-blue-400 font-medium px-1.5 py-0.5 rounded border border-blue-900 flex items-center gap-1">

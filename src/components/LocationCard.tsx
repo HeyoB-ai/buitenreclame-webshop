@@ -54,12 +54,12 @@ export default function LocationCard({
         <div className="absolute top-3 left-3 flex gap-1.5 z-10">
           <span
             className={`text-[10px] font-bold font-mono uppercase tracking-wider px-2 py-1 rounded-md shadow-xs border ${
-              location.type === 'digital'
+              location.type === 'A0-display'
                 ? 'bg-cyan-50 text-cyan-800 border-cyan-200'
                 : 'bg-amber-50 text-amber-800 border-amber-200'
             }`}
           >
-            {location.type === 'digital' ? 'Digitaal' : 'Abri'}
+            {location.type}
           </span>
         </div>
 

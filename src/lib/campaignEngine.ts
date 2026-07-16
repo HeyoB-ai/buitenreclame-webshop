@@ -1,131 +1,120 @@
 /**
  * Campaign planning engine.
  *
- * Ported 1:1 from the <script> engine block in design/reference.html (part 2).
- * Pure functions — no DOM, no React. Same semantics and constants as the demo.
+ * Pure functions — no DOM, no React. The planner and the results list both go
+ * through `planCampaign(...)`; there is no planning arithmetic in the components.
  *
- * CITY_DECAY models diminishing unique reach when you stack multiple screens in
- * the same city: the strongest screen counts fully, each additional screen in
- * that city counts *0.72^rank (they largely see the same people). OFFTARGET is
- * the fraction of a screen's reach that still counts when it does NOT match the
- * chosen audience.
+ * The unit is the GEMEENTE. Two things follow from that, and they are why this
+ * no longer looks like the old screen-based engine:
+ *
+ *  - No overlap decay. Two screens in one city largely see the same people, so
+ *    the old engine discounted each extra screen. Gemeenten are disjoint areas —
+ *    the people in Aalsmeer are not the people in Alkmaar — so reach simply adds
+ *    up. There are no double-counters to strip out.
+ *  - No audience weighting. ESH's reach figure is potentieleKopers × coverage:
+ *    the buyers it counts times the share it promises to reach. That is ESH's own
+ *    claim, not something we re-model per target group.
  */
 
-import { SCREENS, type Screen, type Audience } from '../data/screens';
-
-export const CITY_DECAY = 0.72;
-export const OFFTARGET = 0.35;
+import { GEMEENTEN, reachOf, isUitverkocht, ADVIES_MAX_WEKEN, type Gemeente, type Product } from '../data/gemeenten';
 
 export interface PlanInput {
+  product: Product;
   region: string;
-  aud: Audience | null;
   budget: number;
   weeks: number;
 }
 
 export interface Nudge {
-  s: Screen;
+  g: Gemeente;
   marginal: number;
   cost: number;
 }
 
-export type Floor =
-  | { type: 'empty'; minCost: number }
-  | { type: 'weeks' };
+export type PlanHint =
+  /** Budget too low for even the cheapest gemeente. */
+  | { type: 'budget-te-laag'; minCost: number }
+  /** Past ESH's own advice of 3 weeks — spread the budget instead. */
+  | { type: 'te-veel-weken'; adviesMax: number; weeks: number };
 
 export interface PlanResult {
-  selected: Screen[];
+  selected: Gemeente[];
   spend: number;
-  net: number;
-  raw: number;
+  /** Total weekly reach — a plain sum, no overlap correction (see above). */
+  reach: number;
   nudges: Nudge[];
-  floor: Floor | null;
+  hint: PlanHint | null;
   weeks: number;
   poolSize: number;
+  /** Gemeenten that matched but are sold out — shown, never planned. */
+  uitverkocht: Gemeente[];
 }
 
-/** How fully a screen's reach counts for the chosen audience. */
-export const matchFactor = (s: Screen, aud: Audience | null): number =>
-  !aud ? 0.8 : s.audiences.includes(aud) ? 1 : OFFTARGET;
-
-/** Whether a screen falls inside the selected region ('NL' | 'prov:X' | 'city:Y'). */
-export function inRegion(s: Screen, region: string): boolean {
+/** Whether a gemeente falls inside the selected region ('NL' | 'prov:X' | 'gem:Y'). */
+export function inRegion(g: Gemeente, region: string): boolean {
   if (region === 'NL') return true;
-  if (region.startsWith('prov:')) return s.province === region.slice(5);
-  if (region.startsWith('city:')) return s.city === region.slice(5);
+  if (region.startsWith('prov:')) return g.province === region.slice(5);
+  if (region.startsWith('gem:')) return g.name === region.slice(4);
   return true;
 }
 
-/**
- * Unique (de-duplicated) reach across a selection. Screens in the same city
- * overlap, so within each city the strongest counts fully and each next one is
- * discounted by CITY_DECAY^rank. `raw` is the un-discounted sum for comparison.
- */
-export function uniqueReach(selected: Screen[], aud: Audience | null): { net: number; raw: number } {
-  const byCity: Record<string, Screen[]> = {};
-  for (const s of selected) {
-    (byCity[s.city] = byCity[s.city] || []).push(s);
-  }
-  let net = 0;
-  let raw = 0;
-  for (const city in byCity) {
-    const arr = byCity[city]
-      .map((s) => ({ s, val: s.weeklyReach * matchFactor(s, aud) }))
-      .sort((a, b) => b.val - a.val);
-    arr.forEach((o, i) => {
-      net += o.val * Math.pow(CITY_DECAY, i);
-      raw += o.val;
-    });
-  }
-  return { net: Math.round(net), raw: Math.round(raw) };
+/** Total weekly reach of a selection. Gemeenten are disjoint, so this just adds up. */
+export function totalReach(selected: Gemeente[]): number {
+  return selected.reduce((sum, g) => sum + reachOf(g), 0);
 }
 
 /**
- * Greedily assemble the cheapest bundle that maximises relevant reach within
- * `budget` for `weeks`. Screens are ranked by relevant-reach-per-euro. Also
- * returns upsell nudges (best unbought screens by marginal unique reach) and,
- * when the plan is too thin, a `floor` hint (empty budget or single-week run).
+ * Greedily assemble the cheapest bundle that maximises reach within `budget` for
+ * `weeks`. Gemeenten are ranked on reach-per-euro; sold-out ones are skipped.
+ * Also returns upsell nudges (best unbought gemeenten) and a hint when the plan
+ * is unbuyable (budget too low) or runs past ESH's 3-week advice.
  */
-export function planCampaign({ region, aud, budget, weeks }: PlanInput): PlanResult {
-  const pool = SCREENS
-    .filter((s) => inRegion(s, region))
-    .map((s) => ({ s, mf: matchFactor(s, aud) }))
-    .map((o) => ({ ...o, score: (o.s.weeklyReach * o.mf) / o.s.weeklyPrice }))
+export function planCampaign({ product, region, budget, weeks }: PlanInput): PlanResult {
+  const matching = GEMEENTEN
+    .filter((g) => inRegion(g, region))
+    .filter((g) => g.producten.includes(product));
+
+  const uitverkocht = matching.filter(isUitverkocht);
+
+  const pool = matching
+    .filter((g) => !isUitverkocht(g))
+    .map((g) => ({ g, score: reachOf(g) / g.weeklyPrice }))
     .sort((a, b) => b.score - a.score);
 
-  const selected: Screen[] = [];
+  const selected: Gemeente[] = [];
+  const rest: Gemeente[] = [];
   let spend = 0;
-  const rest: Screen[] = [];
-  for (const o of pool) {
-    const cost = o.s.weeklyPrice * weeks;
+  for (const { g } of pool) {
+    const cost = g.weeklyPrice * weeks;
     if (spend + cost <= budget) {
-      selected.push(o.s);
+      selected.push(g);
       spend += cost;
     } else {
-      rest.push(o.s);
+      rest.push(g);
     }
   }
 
-  const { net, raw } = uniqueReach(selected, aud);
-
-  const cityCount: Record<string, number> = {};
-  selected.forEach((s) => {
-    cityCount[s.city] = (cityCount[s.city] || 0) + 1;
-  });
-
   const nudges: Nudge[] = rest
-    .map((s) => {
-      const k = cityCount[s.city] || 0;
-      const marginal = Math.round(s.weeklyReach * matchFactor(s, aud) * Math.pow(CITY_DECAY, k));
-      return { s, marginal, cost: s.weeklyPrice * weeks };
-    })
+    .map((g) => ({ g, marginal: reachOf(g), cost: g.weeklyPrice * weeks }))
     .filter((n) => n.marginal > 0)
     .sort((a, b) => b.marginal - a.marginal);
 
-  let floor: Floor | null = null;
-  const minCost = pool.length ? Math.min(...pool.map((o) => o.s.weeklyPrice)) * weeks : 0;
-  if (selected.length === 0) floor = { type: 'empty', minCost: Math.ceil(minCost / 50) * 50 };
-  else if (weeks < 2) floor = { type: 'weeks' };
+  let hint: PlanHint | null = null;
+  if (selected.length === 0) {
+    const minCost = pool.length ? Math.min(...pool.map((o) => o.g.weeklyPrice)) * weeks : 0;
+    hint = { type: 'budget-te-laag', minCost: Math.ceil(minCost / 50) * 50 };
+  } else if (weeks > ADVIES_MAX_WEKEN) {
+    hint = { type: 'te-veel-weken', adviesMax: ADVIES_MAX_WEKEN, weeks };
+  }
 
-  return { selected, spend, net, raw, nudges, floor, weeks, poolSize: pool.length };
+  return {
+    selected,
+    spend,
+    reach: totalReach(selected),
+    nudges,
+    hint,
+    weeks,
+    poolSize: pool.length,
+    uitverkocht,
+  };
 }

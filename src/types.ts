@@ -4,8 +4,13 @@
  */
 
 import type { PosterFields, TemplateKey, ThemeKey } from './lib/posterComposer';
+import type { Product } from './data/gemeenten';
 
-export type LocationType = 'abri' | 'digital';
+/**
+ * What hangs at a location. ESH carries two products and both take the same A0
+ * poster, so this no longer drives the poster ratio — only the wording.
+ */
+export type LocationType = Product;
 
 export interface LocationSpecs {
   formats: string[];
@@ -35,9 +40,9 @@ export interface Location {
   environment: string;
   specs: LocationSpecs;
   coordinates: LocationCoordinates;
-  lat?: number; // real WGS84 latitude (from the screen data)
+  lat?: number; // real WGS84 latitude (from the gemeente data)
   lng?: number; // real WGS84 longitude
-  recommendedFor: string[]; // matching tags: "studenten", "forensen", "gezinnen", "sportievelingen", "zakelijk"
+  recommendedFor: string[]; // legacy audience tags — only the mock catalogue still sets these
 }
 
 export interface TargetRegion {
@@ -83,16 +88,16 @@ export interface CartItem {
 
 /**
  * A creative made this session, kept in-memory (no storage) so it can be reused
- * on other screens in the same campaign. AI posters keep their full design so we
- * can re-render at any ratio; uploads keep the source image so we can re-crop.
+ * elsewhere in the same campaign. AI posters keep their full design so we can
+ * re-render them; uploads keep the source image so we can re-crop.
  */
 export interface SessionCreative {
   id: string;
   kind: 'ai' | 'upload';
   title: string;
   subtitle: string;
-  previewUrl: string; // thumbnail, in the ratio it was made
-  ratioType: LocationType; // 'digital' (9:16) | 'abri' (2:3)
+  previewUrl: string; // thumbnail, always the A0 ratio
+  ratioType: LocationType; // the product it was made for (both are A0)
   poster?: {
     fields: PosterFields;
     template: TemplateKey;

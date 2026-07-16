@@ -172,9 +172,7 @@
 .esh-landing .card .thumb .screen { position: absolute; inset: 20px; border-radius: 10px; border: 1px solid rgba(36, 86, 230, .18); background: linear-gradient(135deg, rgba(36, 86, 230, .10), rgba(222, 138, 6, .08)); display: grid; place-items: center; }
 .esh-landing .card .thumb .screen span { font-family: var(--mono); font-size: 10px; color: var(--mist); letter-spacing: .08em; }
 .esh-landing .card .type { position: absolute; top: 11px; left: 11px; font-family: var(--mono); font-size: 10.5px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: .04em; text-transform: uppercase; }
-.esh-landing .card .type.digital { background: var(--cobalt); color: #fff; }
-.esh-landing .card .type.abri { background: var(--ink); color: #fff; }
-.esh-landing .card .match { position: absolute; top: 11px; right: 11px; font-family: var(--mono); font-size: 11px; font-weight: 700; padding: 4px 9px; border-radius: 999px; background: var(--ok-soft); color: var(--ok); border: 1px solid #C4EBDA; }
+.esh-landing .card .type.a0 { background: var(--cobalt); color: #fff; }
 .esh-landing .card .body { padding: 15px 16px 16px; display: flex; flex-direction: column; flex: 1; }
 .esh-landing .card .loc { font-size: 11px; color: var(--mist); font-weight: 600; display: flex; align-items: center; gap: 5px; margin-bottom: 5px; }
 .esh-landing .card .loc svg { color: var(--cobalt); }
@@ -183,6 +181,14 @@
 .esh-landing .card .stat .k { font-size: 10.5px; color: var(--mist-2); text-transform: uppercase; letter-spacing: .03em; margin-bottom: 2px; font-weight: 600; }
 .esh-landing .card .stat .v { font-family: var(--mono); font-weight: 700; font-size: 14.5px; }
 .esh-landing .card .stat .v.price { color: var(--amber-deep); }
+/* Availability line — always paired with an "indicatief" tag, because the
+   display counts in the data are estimates, not a booking guarantee. */
+.esh-landing .card .avail { display: flex; align-items: flex-start; gap: 6px; margin-top: 10px; font-size: 11px; line-height: 1.45; color: var(--mist); }
+.esh-landing .card .avail svg { color: var(--cobalt); flex-shrink: 0; margin-top: 2px; }
+.esh-landing .card .avail b { color: var(--ink); font-weight: 700; }
+.esh-landing .card .avail .indic { display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 999px; background: var(--paper-2, #F6F3EC); border: 1px solid var(--line-2); color: var(--mist-2); font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; }
+.esh-landing .soldout { margin-top: 18px; text-align: center; color: var(--mist); font-size: 13px; line-height: 1.6; }
+.esh-landing .soldout b { color: var(--ink); }
 .esh-landing .card .addbtn { margin-top: 14px; width: 100%; padding: 11px; border-radius: 999px; background: var(--cobalt); color: #fff; font-family: var(--display); font-weight: 700; font-size: 13.5px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; transition: .16s; box-shadow: 0 10px 22px -12px rgba(36, 86, 230, .5); }
 .esh-landing .card .addbtn:hover { background: var(--cobalt-deep); }
 .esh-landing .card .addbtn.added { background: var(--ok-soft); color: var(--ok); box-shadow: none; }
