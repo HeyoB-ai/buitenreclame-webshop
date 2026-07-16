@@ -638,8 +638,16 @@ export default function App() {
             </p>
           </div>
 
-          <div className="text-[11px] text-mist-2 sm:text-right">
-            Bereik = unieke mensen, overlap eruit gerekend · prijzen per week
+          <div className="text-[11px] text-mist-2 sm:text-right space-y-1">
+            <address className="not-italic space-y-0.5">
+              <div>Kromwijk 4a · 3442 AG Woerden</div>
+              <div>
+                <a href="tel:+31348689362" className="hover:text-cobalt">0348 689 362</a>
+                <span aria-hidden="true"> · </span>
+                <a href="mailto:info@eshmedia.nl" className="hover:text-cobalt">info@eshmedia.nl</a>
+              </div>
+            </address>
+            <div>Bereik = unieke mensen, overlap eruit gerekend · prijzen per week</div>
           </div>
         </div>
       </footer>

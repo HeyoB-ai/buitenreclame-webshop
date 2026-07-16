@@ -99,6 +99,9 @@ export default function Landing({
 
       <div className="footer wrap">
         <span>© ESH Media — conceptdemo. Foto's: Higgsfield. Testimonial ter illustratie.</span>
+        <address className="footer-contact">
+          Kromwijk 4a · 3442 AG Woerden · <a href="tel:+31348689362">0348 689 362</a> · <a href="mailto:info@eshmedia.nl">info@eshmedia.nl</a>
+        </address>
         <span>Bereik = unieke mensen, overlap eruit gerekend · prijzen per week</span>
       </div>
     </div>
