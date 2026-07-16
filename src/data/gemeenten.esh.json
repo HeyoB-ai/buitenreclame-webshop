@@ -1,0 +1,982 @@
+[
+{
+"id": "esh-aa-en-hunze",
+"name": "Aa en Hunze",
+"province": "Drenthe",
+"potentieleKopers": 25399,
+"coverage": 0.65,
+"weeklyReach": 16500,
+"displays": 55,
+"displaysVrij": 20,
+"serie": 10,
+"weeklyPrice": 325,
+"plaatsingsdag": "dinsdag",
+"minWeken": 1,
+"adviesMaxWeken": 3,
+"producten": [
+"A0-display",
+"Driehoeksbord"
+],
+"lat": 53.0033,
+"lng": 6.7594,
+"bron": {
+"potentieleKopers": "eshmedia.nl",
+"coverage": "eshmedia.nl",
+"displays": "schatting",
+"displaysVrij": "schatting",
+"weeklyPrice": "schatting"
+}
+},
+{
+"id": "esh-aalsmeer",
+"name": "Aalsmeer",
+"province": "Noord-Holland",
+"potentieleKopers": 33209,
+"coverage": 0.65,
+"weeklyReach": 21600,
+"displays": 75,
+"displaysVrij": 20,
+"serie": 10,
+"weeklyPrice": 325,
+"plaatsingsdag": "maandag",
+"minWeken": 1,
+"adviesMaxWeken": 3,
+"producten": [
+"A0-display",
+"Driehoeksbord"
+],
+"lat": 52.2667,
+"lng": 4.75,
+"bron": {
+"potentieleKopers": "eshmedia.nl",
+"coverage": "eshmedia.nl",
+"displays": "schatting",
+"displaysVrij": "schatting",
+"weeklyPrice": "schatting"
+}
+},
+{
+"id": "esh-aalten",
+"name": "Aalten",
+"province": "Gelderland",
+"potentieleKopers": 27120,
+"coverage": 0.65,
+"weeklyReach": 17600,
+"displays": 60,
+"displaysVrij": 10,
+"serie": 10,
+"weeklyPrice": 325,
+"plaatsingsdag": "maandag",
+"minWeken": 1,
+"adviesMaxWeken": 3,
+"producten": [
+"A0-display",
+"Driehoeksbord"
+],
+"lat": 51.9264,
+"lng": 6.5806,
+"bron": {
+"potentieleKopers": "eshmedia.nl",
+"coverage": "eshmedia.nl",
+"displays": "schatting",
+"displaysVrij": "schatting",
+"weeklyPrice": "schatting"
+}
+},
+{
+"id": "esh-achtkarspelen",
+"name": "Achtkarspelen",
+"province": "Friesland",
+"potentieleKopers": 27900,
+"coverage": 0.65,
+"weeklyReach": 18100,
+"displays": 60,
+"displaysVrij": 10,
+"serie": 10,
+"weeklyPrice": 300,
+"plaatsingsdag": "dinsdag",
+"minWeken": 1,
+"adviesMaxWeken": 3,
+"producten": [
+"A0-display",
+"Driehoeksbord"
+],
+"lat": 53.25,
+"lng": 6.15,
+"bron": {
+"potentieleKopers": "eshmedia.nl",
+"coverage": "eshmedia.nl",
+"displays": "schatting",
+"displaysVrij": "schatting",
+"weeklyPrice": "schatting"
+}
+},
+{
+"id": "esh-alblasserdam",
+"name": "Alblasserdam",
+"province": "Zuid-Holland",
+"potentieleKopers": 20135,
+"coverage": 0.65,
+"weeklyReach": 13100,
+"displays": 45,
+"displaysVrij": 10,
+"serie": 10,
+"weeklyPrice": 275,
+"plaatsingsdag": "dinsdag",
+"minWeken": 1,
+"adviesMaxWeken": 3,
+"producten": [
+"A0-display",
+"Driehoeksbord"
+],
+"lat": 51.8639,
+"lng": 4.6611,
+"bron": {
+"potentieleKopers": "eshmedia.nl",
+"coverage": "eshmedia.nl",
+"displays": "schatting",
+"displaysVrij": "schatting",
+"weeklyPrice": "schatting"
+}
+},
+{
+"id": "esh-albrandswaard",
+"name": "Albrandswaard",
+"province": "Zuid-Holland",
+"potentieleKopers": 26431,
+"coverage": 0.65,
+"weeklyReach": 17200,
+"displays": 60,
+"displaysVrij": 20,
+"serie": 10,
+"weeklyPrice": 300,
+"plaatsingsdag": "dinsdag",
+"minWeken": 1,
+"adviesMaxWeken": 3,
+"producten": [
+"A0-display",
+"Driehoeksbord"
+],
+"lat": 51.85,
+"lng": 4.4,
+"bron": {
+"potentieleKopers": "eshmedia.nl",
+"coverage": "eshmedia.nl",
+"displays": "schatting",
+"displaysVrij": "schatting",
+"weeklyPrice": "schatting"
+}
+},
+{
+"id": "esh-alkmaar",
+"name": "Alkmaar",
+"province": "Noord-Holland",
+"potentieleKopers": 112304,
+"coverage": 0.65,
+"weeklyReach": 73000,
+"displays": 250,
+"displaysVrij": 90,
+"serie": 10,
+"weeklyPrice": 525,
+"plaatsingsdag": "maandag",
+"minWeken": 1,
+"adviesMaxWeken": 3,
+"producten": [
+"A0-display",
+"Driehoeksbord"
+],
+"lat": 52.6317,
+"lng": 4.7481,
+"bron": {
+"potentieleKopers": "eshmedia.nl",
+"coverage": "eshmedia.nl",
+"displays": "schatting",
+"displaysVrij": "schatting",
+"weeklyPrice": "schatting"
+}
+},
+{
+"id": "esh-almelo",
+"name": "Almelo",
+"province": "Overijssel",
+"potentieleKopers": 74752,
+"coverage": 0.65,
+"weeklyReach": 48600,
+"displays": 165,
+"displaysVrij": 20,
+"serie": 10,
+"weeklyPrice": 450,
+"plaatsingsdag": "maandag",
+"minWeken": 1,
+"adviesMaxWeken": 3,
+"producten": [
+"A0-display",
+"Driehoeksbord"
+],
+"lat": 52.3564,
+"lng": 6.6625,
+"bron": {
+"potentieleKopers": "eshmedia.nl",
+"coverage": "eshmedia.nl",
+"displays": "schatting",
+"displaysVrij": "schatting",
+"weeklyPrice": "schatting"
+}
+},
+{
+"id": "esh-almere",
+"name": "Almere",
+"province": "Flevoland",
+"potentieleKopers": 226500,
+"coverage": 0.65,
+"weeklyReach": 147200,
+"displays": 250,
+"displaysVrij": 70,
+"serie": 10,
+"weeklyPrice": 875,
+"plaatsingsdag": "dinsdag",
+"minWeken": 1,
+"adviesMaxWeken": 3,
+"producten": [
+"A0-display",
+"Driehoeksbord"
+],
+"lat": 52.3708,
+"lng": 5.2647,
+"bron": {
+"potentieleKopers": "eshmedia.nl",
+"coverage": "eshmedia.nl",
+"displays": "schatting",
+"displaysVrij": "schatting",
+"weeklyPrice": "schatting"
+}
+},
+{
+"id": "esh-alphen-aan-den-rijn",
+"name": "Alphen aan den Rijn",
+"province": "Zuid-Holland",
+"potentieleKopers": 115746,
+"coverage": 0.65,
+"weeklyReach": 75200,
+"displays": 250,
+"displaysVrij": 30,
+"serie": 10,
+"weeklyPrice": 525,
+"plaatsingsdag": "maandag",
+"minWeken": 1,
+"adviesMaxWeken": 3,
+"producten": [
+"A0-display",
+"Driehoeksbord"
+],
+"lat": 52.1289,
+"lng": 4.6556,
+"bron": {
+"potentieleKopers": "eshmedia.nl",
+"coverage": "eshmedia.nl",
+"displays": "schatting",
+"displaysVrij": "schatting",
+"weeklyPrice": "schatting"
+}
+},
+{
+"id": "esh-alphen-chaam",
+"name": "Alphen-Chaam",
+"province": "Noord-Brabant",
+"potentieleKopers": 10492,
+"coverage": 0.65,
+"weeklyReach": 6800,
+"displays": 25,
+"displaysVrij": 10,
+"serie": 10,
+"weeklyPrice": 275,
+"plaatsingsdag": "dinsdag",
+"minWeken": 1,
+"adviesMaxWeken": 3,
+"producten": [
+"A0-display",
+"Driehoeksbord"
+],
+"lat": 51.4833,
+"lng": 4.95,
+"bron": {
+"potentieleKopers": "eshmedia.nl",
+"coverage": "eshmedia.nl",
+"displays": "schatting",
+"displaysVrij": "schatting",
+"weeklyPrice": "schatting"
+}
+},
+{
+"id": "esh-ameland",
+"name": "Ameland",
+"province": "Friesland",
+"potentieleKopers": 3746,
+"coverage": 0.65,
+"weeklyReach": 2400,
+"displays": 10,
+"displaysVrij": 0,
+"serie": 5,
+"weeklyPrice": 250,
+"plaatsingsdag": "dinsdag",
+"minWeken": 1,
+"adviesMaxWeken": 3,
+"producten": [
+"A0-display",
+"Driehoeksbord"
+],
+"lat": 53.45,
+"lng": 5.7,
+"bron": {
+"potentieleKopers": "eshmedia.nl",
+"coverage": "eshmedia.nl",
+"displays": "schatting",
+"displaysVrij": "schatting",
+"weeklyPrice": "schatting"
+}
+},
+{
+"id": "esh-amersfoort",
+"name": "Amersfoort",
+"province": "Utrecht",
+"potentieleKopers": 161852,
+"coverage": 0.65,
+"weeklyReach": 105200,
+"displays": 250,
+"displaysVrij": 50,
+"serie": 10,
+"weeklyPrice": 650,
+"plaatsingsdag": "dinsdag",
+"minWeken": 1,
+"adviesMaxWeken": 3,
+"producten": [
+"A0-display",
+"Driehoeksbord"
+],
+"lat": 52.1561,
+"lng": 5.3878,
+"bron": {
+"potentieleKopers": "eshmedia.nl",
+"coverage": "eshmedia.nl",
+"displays": "schatting",
+"displaysVrij": "schatting",
+"weeklyPrice": "schatting"
+}
+},
+{
+"id": "esh-amstelveen",
+"name": "Amstelveen",
+"province": "Noord-Holland",
+"potentieleKopers": 95014,
+"coverage": 0.65,
+"weeklyReach": 61800,
+"displays": 210,
+"displaysVrij": 70,
+"serie": 10,
+"weeklyPrice": 500,
+"plaatsingsdag": "maandag",
+"minWeken": 1,
+"adviesMaxWeken": 3,
+"producten": [
+"A0-display",
+"Driehoeksbord"
+],
+"lat": 52.3114,
+"lng": 4.8631,
+"bron": {
+"potentieleKopers": "eshmedia.nl",
+"coverage": "eshmedia.nl",
+"displays": "schatting",
+"displaysVrij": "schatting",
+"weeklyPrice": "schatting"
+}
+},
+{
+"id": "esh-amsterdam",
+"name": "Amsterdam",
+"province": "Noord-Holland",
+"potentieleKopers": 935793,
+"coverage": 0.65,
+"weeklyReach": 608300,
+"displays": 250,
+"displaysVrij": 90,
+"serie": 10,
+"weeklyPrice": 2475,
+"plaatsingsdag": "dinsdag",
+"minWeken": 1,
+"adviesMaxWeken": 3,
+"producten": [
+"A0-display",
+"Driehoeksbord"
+],
+"lat": 52.3676,
+"lng": 4.9041,
+"bron": {
+"potentieleKopers": "eshmedia.nl",
+"coverage": "eshmedia.nl",
+"displays": "schatting",
+"displaysVrij": "schatting",
+"weeklyPrice": "schatting"
+}
+},
+{
+"id": "esh-apeldoorn",
+"name": "Apeldoorn",
+"province": "Gelderland",
+"potentieleKopers": 159025,
+"coverage": 0.65,
+"weeklyReach": 103400,
+"displays": 250,
+"displaysVrij": 70,
+"serie": 10,
+"weeklyPrice": 675,
+"plaatsingsdag": "maandag",
+"minWeken": 1,
+"adviesMaxWeken": 3,
+"producten": [
+"A0-display",
+"Driehoeksbord"
+],
+"lat": 52.2112,
+"lng": 5.9699,
+"bron": {
+"potentieleKopers": "eshmedia.nl",
+"coverage": "eshmedia.nl",
+"displays": "schatting",
+"displaysVrij": "schatting",
+"weeklyPrice": "schatting"
+}
+},
+{
+"id": "esh-assen",
+"name": "Assen",
+"province": "Drenthe",
+"potentieleKopers": 69701,
+"coverage": 0.65,
+"weeklyReach": 45300,
+"displays": 155,
+"displaysVrij": 50,
+"serie": 10,
+"weeklyPrice": 450,
+"plaatsingsdag": "maandag",
+"minWeken": 1,
+"adviesMaxWeken": 3,
+"producten": [
+"A0-display",
+"Driehoeksbord"
+],
+"lat": 52.9925,
+"lng": 6.5644,
+"bron": {
+"potentieleKopers": "eshmedia.nl",
+"coverage": "eshmedia.nl",
+"displays": "schatting",
+"displaysVrij": "schatting",
+"weeklyPrice": "schatting"
+}
+},
+{
+"id": "esh-asten",
+"name": "Asten",
+"province": "Noord-Brabant",
+"potentieleKopers": 16817,
+"coverage": 0.65,
+"weeklyReach": 10900,
+"displays": 35,
+"displaysVrij": 10,
+"serie": 10,
+"weeklyPrice": 300,
+"plaatsingsdag": "dinsdag",
+"minWeken": 1,
+"adviesMaxWeken": 3,
+"producten": [
+"A0-display",
+"Driehoeksbord"
+],
+"lat": 51.4014,
+"lng": 5.75,
+"bron": {
+"potentieleKopers": "eshmedia.nl",
+"coverage": "eshmedia.nl",
+"displays": "schatting",
+"displaysVrij": "schatting",
+"weeklyPrice": "schatting"
+}
+},
+{
+"id": "esh-baarn",
+"name": "Baarn",
+"province": "Utrecht",
+"potentieleKopers": 24765,
+"coverage": 0.65,
+"weeklyReach": 16100,
+"displays": 55,
+"displaysVrij": 10,
+"serie": 10,
+"weeklyPrice": 325,
+"plaatsingsdag": "dinsdag",
+"minWeken": 1,
+"adviesMaxWeken": 3,
+"producten": [
+"A0-display",
+"Driehoeksbord"
+],
+"lat": 52.2117,
+"lng": 5.2872,
+"bron": {
+"potentieleKopers": "eshmedia.nl",
+"coverage": "eshmedia.nl",
+"displays": "schatting",
+"displaysVrij": "schatting",
+"weeklyPrice": "schatting"
+}
+},
+{
+"id": "esh-barendrecht",
+"name": "Barendrecht",
+"province": "Zuid-Holland",
+"potentieleKopers": 48771,
+"coverage": 0.65,
+"weeklyReach": 31700,
+"displays": 110,
+"displaysVrij": 40,
+"serie": 10,
+"weeklyPrice": 375,
+"plaatsingsdag": "maandag",
+"minWeken": 1,
+"adviesMaxWeken": 3,
+"producten": [
+"A0-display",
+"Driehoeksbord"
+],
+"lat": 51.8564,
+"lng": 4.5372,
+"bron": {
+"potentieleKopers": "eshmedia.nl",
+"coverage": "eshmedia.nl",
+"displays": "schatting",
+"displaysVrij": "schatting",
+"weeklyPrice": "schatting"
+}
+},
+{
+"id": "esh-etten-leur",
+"name": "Etten-Leur",
+"province": "Noord-Brabant",
+"potentieleKopers": 45475,
+"coverage": 0.65,
+"weeklyReach": 29600,
+"displays": 100,
+"displaysVrij": 30,
+"serie": 10,
+"weeklyPrice": 350,
+"plaatsingsdag": "maandag",
+"minWeken": 1,
+"adviesMaxWeken": 3,
+"producten": [
+"A0-display",
+"Driehoeksbord"
+],
+"lat": 51.5714,
+"lng": 4.6389,
+"bron": {
+"potentieleKopers": "eshmedia.nl",
+"coverage": "eshmedia.nl",
+"displays": "schatting",
+"displaysVrij": "schatting",
+"weeklyPrice": "schatting"
+}
+},
+{
+"id": "esh-noordwijk",
+"name": "Noordwijk",
+"province": "Zuid-Holland",
+"potentieleKopers": 45946,
+"coverage": 0.65,
+"weeklyReach": 29900,
+"displays": 100,
+"displaysVrij": 40,
+"serie": 10,
+"weeklyPrice": 375,
+"plaatsingsdag": "dinsdag",
+"minWeken": 1,
+"adviesMaxWeken": 3,
+"producten": [
+"A0-display",
+"Driehoeksbord"
+],
+"lat": 52.24,
+"lng": 4.4444,
+"bron": {
+"potentieleKopers": "eshmedia.nl",
+"coverage": "eshmedia.nl",
+"displays": "schatting",
+"displaysVrij": "schatting",
+"weeklyPrice": "schatting"
+}
+},
+{
+"id": "esh-bodegraven-reeuwijk",
+"name": "Bodegraven-Reeuwijk",
+"province": "Zuid-Holland",
+"potentieleKopers": 35519,
+"coverage": 0.65,
+"weeklyReach": 23100,
+"displays": 80,
+"displaysVrij": 10,
+"serie": 10,
+"weeklyPrice": 325,
+"plaatsingsdag": "maandag",
+"minWeken": 1,
+"adviesMaxWeken": 3,
+"producten": [
+"A0-display",
+"Driehoeksbord"
+],
+"lat": 52.0833,
+"lng": 4.75,
+"bron": {
+"potentieleKopers": "eshmedia.nl",
+"coverage": "eshmedia.nl",
+"displays": "schatting",
+"displaysVrij": "schatting",
+"weeklyPrice": "schatting"
+}
+},
+{
+"id": "esh-beverwijk",
+"name": "Beverwijk",
+"province": "Noord-Holland",
+"potentieleKopers": 41863,
+"coverage": 0.65,
+"weeklyReach": 27200,
+"displays": 95,
+"displaysVrij": 30,
+"serie": 10,
+"weeklyPrice": 350,
+"plaatsingsdag": "maandag",
+"minWeken": 1,
+"adviesMaxWeken": 3,
+"producten": [
+"A0-display",
+"Driehoeksbord"
+],
+"lat": 52.4833,
+"lng": 4.6567,
+"bron": {
+"potentieleKopers": "eshmedia.nl",
+"coverage": "eshmedia.nl",
+"displays": "schatting",
+"displaysVrij": "schatting",
+"weeklyPrice": "schatting"
+}
+},
+{
+"id": "esh-midden-groningen",
+"name": "Midden-Groningen",
+"province": "Groningen",
+"potentieleKopers": 61450,
+"coverage": 0.65,
+"weeklyReach": 39900,
+"displays": 135,
+"displaysVrij": 30,
+"serie": 10,
+"weeklyPrice": 375,
+"plaatsingsdag": "maandag",
+"minWeken": 1,
+"adviesMaxWeken": 3,
+"producten": [
+"A0-display",
+"Driehoeksbord"
+],
+"lat": 53.16,
+"lng": 6.76,
+"bron": {
+"potentieleKopers": "eshmedia.nl",
+"coverage": "eshmedia.nl",
+"displays": "schatting",
+"displaysVrij": "schatting",
+"weeklyPrice": "schatting"
+}
+},
+{
+"id": "esh-vijfheerenlanden-leerdam",
+"name": "Vijfheerenlanden - Leerdam",
+"province": "Utrecht",
+"potentieleKopers": 18945,
+"coverage": 0.65,
+"weeklyReach": 12300,
+"displays": 40,
+"displaysVrij": 10,
+"serie": 10,
+"weeklyPrice": 325,
+"plaatsingsdag": "dinsdag",
+"minWeken": 1,
+"adviesMaxWeken": 3,
+"producten": [
+"A0-display",
+"Driehoeksbord"
+],
+"lat": 51.8933,
+"lng": 5.0917,
+"bron": {
+"potentieleKopers": "eshmedia.nl",
+"coverage": "eshmedia.nl",
+"displays": "schatting",
+"displaysVrij": "schatting",
+"weeklyPrice": "schatting"
+}
+},
+{
+"id": "esh-neder-betuwe",
+"name": "Neder-Betuwe",
+"province": "Gelderland",
+"potentieleKopers": 24648,
+"coverage": 0.65,
+"weeklyReach": 16000,
+"displays": 55,
+"displaysVrij": 20,
+"serie": 10,
+"weeklyPrice": 300,
+"plaatsingsdag": "maandag",
+"minWeken": 1,
+"adviesMaxWeken": 3,
+"producten": [
+"A0-display",
+"Driehoeksbord"
+],
+"lat": 51.9333,
+"lng": 5.6333,
+"bron": {
+"potentieleKopers": "eshmedia.nl",
+"coverage": "eshmedia.nl",
+"displays": "schatting",
+"displaysVrij": "schatting",
+"weeklyPrice": "schatting"
+}
+},
+{
+"id": "esh-delft",
+"name": "Delft",
+"province": "Zuid-Holland",
+"potentieleKopers": 110224,
+"coverage": 0.65,
+"weeklyReach": 71600,
+"displays": 245,
+"displaysVrij": 90,
+"serie": 10,
+"weeklyPrice": 525,
+"plaatsingsdag": "maandag",
+"minWeken": 1,
+"adviesMaxWeken": 3,
+"producten": [
+"A0-display",
+"Driehoeksbord"
+],
+"lat": 52.0116,
+"lng": 4.3571,
+"bron": {
+"potentieleKopers": "eshmedia.nl",
+"coverage": "eshmedia.nl",
+"displays": "schatting",
+"displaysVrij": "schatting",
+"weeklyPrice": "schatting"
+}
+},
+{
+"id": "esh-voerendaal",
+"name": "Voerendaal",
+"province": "Limburg",
+"potentieleKopers": 12466,
+"coverage": 0.65,
+"weeklyReach": 8100,
+"displays": 30,
+"displaysVrij": 0,
+"serie": 10,
+"weeklyPrice": 275,
+"plaatsingsdag": "maandag",
+"minWeken": 1,
+"adviesMaxWeken": 3,
+"producten": [
+"A0-display",
+"Driehoeksbord"
+],
+"lat": 50.8833,
+"lng": 5.9333,
+"bron": {
+"potentieleKopers": "eshmedia.nl",
+"coverage": "eshmedia.nl",
+"displays": "schatting",
+"displaysVrij": "schatting",
+"weeklyPrice": "schatting"
+}
+},
+{
+"id": "esh-hengelo",
+"name": "Hengelo",
+"province": "Overijssel",
+"potentieleKopers": 83644,
+"coverage": 0.65,
+"weeklyReach": 54400,
+"displays": 185,
+"displaysVrij": 30,
+"serie": 10,
+"weeklyPrice": 450,
+"plaatsingsdag": "maandag",
+"minWeken": 1,
+"adviesMaxWeken": 3,
+"producten": [
+"A0-display",
+"Driehoeksbord"
+],
+"lat": 52.2653,
+"lng": 6.7931,
+"bron": {
+"potentieleKopers": "eshmedia.nl",
+"coverage": "eshmedia.nl",
+"displays": "schatting",
+"displaysVrij": "schatting",
+"weeklyPrice": "schatting"
+}
+},
+{
+"id": "esh-midden-delfland",
+"name": "Midden-Delfland",
+"province": "Zuid-Holland",
+"potentieleKopers": 19382,
+"coverage": 0.65,
+"weeklyReach": 12600,
+"displays": 45,
+"displaysVrij": 10,
+"serie": 10,
+"weeklyPrice": 300,
+"plaatsingsdag": "maandag",
+"minWeken": 1,
+"adviesMaxWeken": 3,
+"producten": [
+"A0-display",
+"Driehoeksbord"
+],
+"lat": 51.9667,
+"lng": 4.3167,
+"bron": {
+"potentieleKopers": "eshmedia.nl",
+"coverage": "eshmedia.nl",
+"displays": "schatting",
+"displaysVrij": "schatting",
+"weeklyPrice": "schatting"
+}
+},
+{
+"id": "esh-woerden",
+"name": "Woerden",
+"province": "Utrecht",
+"potentieleKopers": 52197,
+"coverage": 0.65,
+"weeklyReach": 33900,
+"displays": 115,
+"displaysVrij": 40,
+"serie": 10,
+"weeklyPrice": 375,
+"plaatsingsdag": "dinsdag",
+"minWeken": 1,
+"adviesMaxWeken": 3,
+"producten": [
+"A0-display",
+"Driehoeksbord"
+],
+"lat": 52.0855,
+"lng": 4.8836,
+"bron": {
+"potentieleKopers": "eshmedia.nl",
+"coverage": "eshmedia.nl",
+"displays": "schatting",
+"displaysVrij": "schatting",
+"weeklyPrice": "schatting"
+}
+},
+{
+"id": "esh-schouwen-duiveland",
+"name": "Schouwen-Duiveland",
+"province": "Zeeland",
+"potentieleKopers": 33800,
+"coverage": 0.65,
+"weeklyReach": 22000,
+"displays": 150,
+"displaysVrij": 30,
+"serie": 10,
+"weeklyPrice": 325,
+"plaatsingsdag": "maandag",
+"minWeken": 1,
+"adviesMaxWeken": 3,
+"producten": [
+"A0-display",
+"Driehoeksbord"
+],
+"lat": 51.65,
+"lng": 3.9167,
+"bron": {
+"potentieleKopers": "eshmedia.nl",
+"coverage": "eshmedia.nl",
+"displays": "esh",
+"displaysVrij": "schatting",
+"weeklyPrice": "schatting"
+}
+},
+{
+"id": "esh-houten",
+"name": "Houten",
+"province": "Utrecht",
+"potentieleKopers": 50600,
+"coverage": 0.65,
+"weeklyReach": 32900,
+"displays": 110,
+"displaysVrij": 20,
+"serie": 10,
+"weeklyPrice": 400,
+"plaatsingsdag": "dinsdag",
+"minWeken": 1,
+"adviesMaxWeken": 3,
+"producten": [
+"A0-display",
+"Driehoeksbord"
+],
+"lat": 52.0286,
+"lng": 5.1683,
+"bron": {
+"potentieleKopers": "eshmedia.nl",
+"coverage": "eshmedia.nl",
+"displays": "schatting",
+"displaysVrij": "schatting",
+"weeklyPrice": "schatting"
+}
+},
+{
+"id": "esh-dordrecht",
+"name": "Dordrecht",
+"province": "Zuid-Holland",
+"potentieleKopers": 118309,
+"coverage": 0.65,
+"weeklyReach": 76900,
+"displays": 250,
+"displaysVrij": 80,
+"serie": 10,
+"weeklyPrice": 500,
+"plaatsingsdag": "dinsdag",
+"minWeken": 1,
+"adviesMaxWeken": 3,
+"producten": [
+"A0-display",
+"Driehoeksbord"
+],
+"lat": 51.8133,
+"lng": 4.6903,
+"bron": {
+"potentieleKopers": "eshmedia.nl",
+"coverage": "eshmedia.nl",
+"displays": "schatting",
+"displaysVrij": "schatting",
+"weeklyPrice": "schatting"
+}
+}
+]
