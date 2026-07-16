@@ -98,7 +98,7 @@ export default function Landing({
       <FinalCta />
 
       <div className="footer wrap">
-        <span>© Global Buitenreclame — conceptdemo. Foto's: Higgsfield. Testimonial ter illustratie.</span>
+        <span>© ESH Media — conceptdemo. Foto's: Higgsfield. Testimonial ter illustratie.</span>
         <span>Bereik = unieke mensen, overlap eruit gerekend · prijzen per week</span>
       </div>
     </div>

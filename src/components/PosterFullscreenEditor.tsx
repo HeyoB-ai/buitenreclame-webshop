@@ -127,7 +127,7 @@ export default function PosterFullscreenEditor({ location, design, onApply, onCl
               className={`w-full flex justify-between items-center ${draft.textColor} opacity-60 border-t border-current/20`}
               style={{ fontSize: '2.4cqw', paddingTop: '2cqw' }}
             >
-              <span className="font-mono tracking-wider">GLOBAL BUITENRECLAME</span>
+              <span className="font-mono tracking-wider">ESH MEDIA</span>
               <span className="font-mono">{location.city.toUpperCase()}</span>
             </div>
           </div>

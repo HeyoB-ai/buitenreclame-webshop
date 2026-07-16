@@ -22,7 +22,7 @@ export default function HowItWorks() {
               <div className="no">2</div>
               <div>
                 <h3>Wij kiezen de beste plekken</h3>
-                <p>Global zoekt de schermen op waar jouw klanten echt langskomen. Bij elk scherm zie je de straat, de wijk en waarom het bij je past — dus je weet altijd wat je boekt en waar het hangt.</p>
+                <p>ESH Media zoekt de plekken op waar jouw klanten echt langskomen. Bij elk scherm zie je de straat, de wijk en waarom het bij je past — dus je weet altijd wat je boekt en waar het hangt.</p>
               </div>
             </div>
             <div className="stepcard">

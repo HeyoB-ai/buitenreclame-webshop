@@ -634,7 +634,7 @@ export default function App() {
               Buitenreclame voor het MKB — vertel wie je wilt bereiken en wat je kwijt wilt, en je ziet meteen hoe ver je komt. Geen bureau, geen jargon.
             </p>
             <p className="text-[10px] text-mist-2">
-              © 2026 Global Buitenreclame. Alle rechten voorbehouden.
+              © 2026 ESH Media. Alle rechten voorbehouden.
             </p>
           </div>
 

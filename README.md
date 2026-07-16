@@ -1,4 +1,4 @@
-# Global — Buitenreclame
+# ESH Media — Buitenreclame
 
 Zelfbedieningsplatform voor buitenreclame voor het MKB. Een ondernemer vertelt
 wie hij wil bereiken en wat hij kwijt wil, en ziet meteen hoe ver zijn budget
