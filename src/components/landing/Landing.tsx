@@ -42,7 +42,7 @@ export default function Landing({
   };
 
   return (
-    <div className="gws-landing">
+    <div className="esh-landing">
       {/* topbar */}
       <div className="topbar">
         <div className="in">

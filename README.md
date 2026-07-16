@@ -91,7 +91,7 @@ De designtokens (kleuren, radii, schaduwen, fonts) staan in `src/index.css`
 (`@theme`), 1-op-1 overgenomen uit `design/reference.html` — de goedgekeurde
 visuele bron van waarheid. Licht *paper*-palet, **cobalt** als actiekleur en
 **amber** uitsluitend voor bereik-/prijsgetallen. De landing-styling staat
-gescoped in `src/components/landing/landing.css` (onder `.gws-landing`) zodat die
+gescoped in `src/components/landing/landing.css` (onder `.esh-landing`) zodat die
 niet lekt naar de rest van de app.
 
 Media (hero-video, foto's) staan in `public/assets/`.
