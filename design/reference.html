@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Global — buitenreclame voor het MKB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBFAF7; --paper-2:#F4F1EA; --card:#FFFFFF;
+    --ink:#16213A; --mist:#5B6B85; --mist-2:#8B97AB;
+    --line:#E8E5DC; --line-2:#EFEDE6;
+    --cobalt:#2456E6; --cobalt-deep:#1D46C4; --cobalt-soft:#EAF0FF;
+    --amber:#DE8A06; --amber-deep:#C67B04; --amber-soft:#FDF3E1; --amber-line:#F3DCB2;
+    --ok:#0E9F6E; --ok-soft:#E8F7F0;
+    --night:#0A0F1E;
+    --sans:"Inter",system-ui,sans-serif; --display:"Poppins",sans-serif; --mono:"JetBrains Mono",monospace;
+    --r:22px; --r-sm:14px;
+    --shadow:0 2px 6px rgba(22,33,58,.05), 0 18px 44px -18px rgba(22,33,58,.14);
+    --shadow-lg:0 4px 10px rgba(22,33,58,.06), 0 30px 70px -24px rgba(22,33,58,.20);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--sans);background:var(--paper);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.55;overflow-x:hidden}
+  .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+  a{color:inherit;text-decoration:none}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  .wrap{max-width:1240px;margin:0 auto;padding-left:clamp(20px,5vw,64px);padding-right:clamp(20px,5vw,64px)}
+  .eyebrow{display:inline-flex;align-items:center;gap:9px;font-size:13px;font-weight:700;letter-spacing:.05em;color:var(--cobalt);text-transform:uppercase;margin-bottom:18px}
+  .eyebrow .pulse{width:8px;height:8px;border-radius:50%;background:var(--cobalt);animation:pulse 2.4s infinite}
+  .eyebrow.warm{color:var(--amber)} .eyebrow.warm .pulse{background:var(--amber)}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  h2.sec{font-family:var(--display);font-weight:800;font-size:clamp(28px,4vw,46px);line-height:1.06;letter-spacing:-.025em}
+  h2.sec em{font-style:normal;color:var(--cobalt)}
+  .lead{font-size:clamp(16px,1.35vw,18px);color:var(--mist);line-height:1.7}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;font-family:var(--display);font-weight:700;letter-spacing:-.01em;border-radius:999px;transition:.16s}
+  .btn-primary{background:var(--cobalt);color:#fff;padding:16px 30px;font-size:16px;box-shadow:0 14px 30px -12px rgba(36,86,230,.5)}
+  .btn-primary:hover{background:var(--cobalt-deep);transform:translateY(-1px)}
+  .btn .arr{transition:.16s}.btn:hover .arr{transform:translateX(4px)}
+
+  /* ---------- top bar ---------- */
+  .topbar{position:sticky;top:0;z-index:30;background:rgba(251,250,247,.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line-2)}
+  .topbar .in{display:flex;align-items:center;justify-content:space-between;padding:16px clamp(20px,5vw,64px);max-width:1400px;margin:0 auto}
+  .brand{display:flex;align-items:center;gap:11px;font-family:var(--display);font-weight:700;font-size:19px;letter-spacing:-.01em}
+  .brand .dot{width:12px;height:12px;border-radius:4px;background:var(--cobalt)}
+  .brand small{font-family:var(--sans);font-weight:500;color:var(--mist);font-size:12px;margin-left:2px}
+  .topnav{display:flex;gap:26px;align-items:center;font-size:14.5px;color:var(--mist);font-weight:600}
+  .topnav a:hover{color:var(--ink)}
+  .topnav .pill{padding:10px 20px;border-radius:999px;background:var(--cobalt);color:#fff;font-weight:700}
+  .topnav .pill:hover{background:var(--cobalt-deep);color:#fff}
+  @media(max-width:760px){.topnav a:not(.pill){display:none}}
+
+  /* ---------- hero ---------- */
+  .hero{position:relative;padding:clamp(48px,7vw,96px) 0 clamp(56px,7vw,90px);overflow:hidden}
+  .hero-bgvideo,.hero-bgposter{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+  .hero::before{content:"";position:absolute;inset:0;z-index:1;background:
+    linear-gradient(90deg, rgba(251,250,247,.96) 0%, rgba(251,250,247,.88) 34%, rgba(251,250,247,.55) 62%, rgba(251,250,247,.38) 100%),
+    linear-gradient(180deg, rgba(251,250,247,.75) 0%, rgba(251,250,247,.25) 40%, var(--paper) 100%)}
+  .hero .wrap{position:relative;z-index:2}
+  .hero-inner{position:relative;display:grid;grid-template-columns:1.02fr .98fr;gap:clamp(28px,4vw,72px);align-items:center}
+  @media(max-width:940px){.hero-inner{grid-template-columns:1fr;gap:38px}}
+  h1{font-family:var(--display);font-weight:800;font-size:clamp(38px,5.2vw,64px);line-height:1.03;letter-spacing:-.028em;margin-bottom:20px}
+  h1 .accent{color:var(--cobalt)}
+  .hero .lede{font-size:clamp(16px,1.4vw,18.5px);color:var(--mist);max-width:36ch;line-height:1.7}
+  .trust{margin-top:26px;display:flex;gap:20px;flex-wrap:wrap;color:var(--mist-2);font-size:13.5px;font-weight:500}
+  .trust b{color:var(--ink);font-weight:700}.trust .sep{color:var(--line)}
+
+  /* ---------- planner (light card) ---------- */
+  .planner{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:26px;box-shadow:var(--shadow-lg)}
+  .planner .plabel{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--mist);margin-bottom:11px;display:flex;align-items:center;gap:8px}
+  .planner .step{width:20px;height:20px;border-radius:7px;background:var(--cobalt-soft);color:var(--cobalt);display:grid;place-items:center;font-family:var(--mono);font-size:11px;font-weight:700}
+  .field+.field{margin-top:20px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{padding:9px 15px;border:1px solid var(--line);border-radius:999px;background:var(--card);font-size:13.5px;font-weight:600;color:var(--mist);transition:.16s;white-space:nowrap}
+  .chip:hover{border-color:var(--cobalt);color:var(--cobalt)}
+  .chip.on{background:var(--cobalt);border-color:var(--cobalt);color:#fff;box-shadow:0 8px 18px -8px rgba(36,86,230,.55)}
+  .selectwrap{position:relative}
+  select{width:100%;appearance:none;background:var(--card);border:1px solid var(--line);color:var(--ink);border-radius:var(--r-sm);padding:13px 42px 13px 14px;font-family:var(--sans);font-size:14.5px;font-weight:600;cursor:pointer}
+  select:focus{outline:none;border-color:var(--cobalt);box-shadow:0 0 0 3px var(--cobalt-soft)}
+  .selectwrap::after{content:"";position:absolute;right:16px;top:50%;width:8px;height:8px;border-right:2px solid var(--mist);border-bottom:2px solid var(--mist);transform:translateY(-70%) rotate(45deg);pointer-events:none}
+  .budgetrow{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px;gap:12px;flex-wrap:wrap}
+  .budgetval{font-family:var(--display);font-weight:800;font-size:26px;letter-spacing:-.02em}
+  .budgetval span{color:var(--mist);font-size:14px;font-weight:500;font-family:var(--sans)}
+  input[type=range]{-webkit-appearance:none;width:100%;height:8px;border-radius:8px;background:linear-gradient(90deg,var(--cobalt) var(--fill,40%), #E9E6DE var(--fill,40%));cursor:pointer}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:#fff;border:5px solid var(--cobalt);box-shadow:0 3px 10px rgba(22,33,58,.25);transition:.12s}
+  input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.08)}
+  input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:#fff;border:5px solid var(--cobalt)}
+  .rangeticks{display:flex;justify-content:space-between;margin-top:8px;font-size:11.5px;color:var(--mist-2)}
+  .weeks{display:flex;align-items:center;gap:12px}
+  .stepbtn{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);font-size:18px;font-weight:700;color:var(--ink);background:var(--card);transition:.14s}
+  .stepbtn:hover{border-color:var(--cobalt);color:var(--cobalt);background:var(--cobalt-soft)}
+  .weeks .wval{font-family:var(--mono);font-weight:600;font-size:15.5px;min-width:74px;text-align:center}
+
+  /* ---------- readout (signature, warm cream) ---------- */
+  .readout{margin-top:24px;border-radius:18px;padding:20px 22px;position:relative;background:var(--amber-soft);border:1px solid var(--amber-line)}
+  .readout .rlabel{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--amber-deep);margin-bottom:4px}
+  .reachnum{font-family:var(--display);font-weight:800;font-size:clamp(40px,5.2vw,56px);line-height:1;letter-spacing:-.03em;color:var(--amber)}
+  .reachnum .approx{font-size:.55em;color:var(--mist);font-weight:600;margin-right:6px}
+  .reachsub{margin-top:8px;font-size:13.5px;color:var(--mist)} .reachsub b{color:var(--ink);font-weight:700}
+  .valuetag{margin-top:14px;display:flex;align-items:flex-start;gap:9px;font-size:13px;color:var(--ink);background:var(--ok-soft);border:1px solid #C4EBDA;border-radius:12px;padding:10px 12px}
+  .valuetag .ic{color:var(--ok);flex-shrink:0;margin-top:1px} .valuetag .dim{color:var(--mist)}
+  .nudge{margin-top:12px;display:flex;align-items:center;gap:13px;background:var(--cobalt-soft);border:1px solid #CFDDFB;border-radius:14px;padding:12px 14px}
+  .nudge .up{width:30px;height:30px;border-radius:50%;background:var(--cobalt);color:#fff;display:grid;place-items:center;flex-shrink:0}
+  .nudge .ntext{flex:1;font-size:13px;line-height:1.45;color:var(--ink)} .nudge .ntext b{font-weight:700} .nudge .ntext .plus{color:var(--cobalt);font-weight:700;font-family:var(--mono)}
+  .nudge .nadd{padding:8px 15px;border-radius:999px;background:#fff;border:1px solid #CFDDFB;font-size:12.5px;font-weight:700;color:var(--cobalt);white-space:nowrap;transition:.14s}
+  .nudge .nadd:hover{background:var(--cobalt);border-color:var(--cobalt);color:#fff}
+  .floor{margin-top:12px;display:flex;gap:10px;align-items:flex-start;font-size:12.5px;color:#7A5A10;background:#FCF6E8;border:1px solid var(--amber-line);border-radius:13px;padding:11px 13px;line-height:1.5}
+  .floor .ic{flex-shrink:0;margin-top:1px;color:var(--amber)} .floor b{color:var(--ink);font-weight:700}
+  .floor .fix{color:var(--amber-deep);font-weight:700;text-decoration:underline;text-underline-offset:2px;cursor:pointer;white-space:nowrap}
+  .cta{margin-top:18px;width:100%;padding:16px;border-radius:999px;background:var(--cobalt);color:#fff;font-family:var(--display);font-weight:700;font-size:16px;letter-spacing:-.01em;transition:.16s;display:flex;align-items:center;justify-content:center;gap:9px;box-shadow:0 14px 30px -12px rgba(36,86,230,.5)}
+  .cta:hover{background:var(--cobalt-deep);transform:translateY(-1px)} .cta .arr{transition:.16s}.cta:hover .arr{transform:translateX(4px)}
+  .reassure{margin-top:14px;text-align:center;font-size:12.5px;color:var(--mist-2)}
+
+  /* ---------- foto's ---------- */
+  .photo{position:relative;border-radius:var(--r);overflow:hidden;border:1px solid var(--line);min-height:280px;box-shadow:var(--shadow)}
+  .photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:2}
+  .photo .ph-fallback{position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:20px;text-align:center;background:var(--paper-2)}
+  .photo .ph-fallback svg{color:var(--mist-2)} .photo .ph-fallback span{font-family:var(--mono);font-size:11.5px;color:var(--mist-2)}
+
+  /* ---------- voor jou ---------- */
+  .voorjou{background:var(--paper-2);padding:clamp(70px,9vw,120px) 0;border-top:1px solid var(--line-2)}
+  .voorjou .grid2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,5vw,72px);align-items:center}
+  @media(max-width:860px){.voorjou .grid2{grid-template-columns:1fr;gap:34px}}
+  .voorjou h2.sec{margin-bottom:20px} .voorjou p+p{margin-top:16px}
+  .voorjou .photo{min-height:460px}
+  .voorjou .btnrow{margin-top:30px}
+
+  /* ---------- zo werkt het ---------- */
+  .how{padding:clamp(70px,9vw,120px) 0}
+  .how .head{max-width:620px;margin-bottom:48px}
+  .how h2.sec{margin-bottom:16px}
+  .how .layout{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(30px,5vw,64px);align-items:start}
+  @media(max-width:860px){.how .layout{grid-template-columns:1fr}}
+  .how .photo{min-height:100%;position:sticky;top:100px}
+  @media(max-width:860px){.how .photo{min-height:320px;position:static}}
+  .steps{display:flex;flex-direction:column;gap:14px}
+  .stepcard{display:flex;gap:20px;padding:26px;border-radius:var(--r);background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);transition:.18s}
+  .stepcard:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+  .stepcard .no{font-family:var(--display);font-weight:800;font-size:20px;color:var(--cobalt);width:46px;height:46px;border-radius:50%;background:var(--cobalt-soft);display:grid;place-items:center;flex-shrink:0}
+  .stepcard h3{font-family:var(--display);font-weight:700;font-size:19px;letter-spacing:-.01em;margin-bottom:7px}
+  .stepcard p{color:var(--mist);font-size:14.5px;line-height:1.65}
+  .stepcard .tag{display:inline-block;margin-top:11px;font-family:var(--mono);font-size:11px;color:var(--amber-deep);background:var(--amber-soft);border:1px solid var(--amber-line);padding:4px 11px;border-radius:999px}
+
+  /* ---------- uitleg ---------- */
+  .explain{padding:clamp(70px,9vw,120px) 0;background:var(--paper-2);border-top:1px solid var(--line-2);border-bottom:1px solid var(--line-2)}
+  .explain .head{max-width:640px;margin-bottom:40px} .explain h2.sec{margin-bottom:16px}
+  .terms{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+  .term{padding:26px;border-radius:var(--r);background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow)}
+  .term .ico{width:44px;height:44px;border-radius:14px;background:var(--cobalt-soft);color:var(--cobalt);display:grid;place-items:center;margin-bottom:15px}
+  .term h4{font-family:var(--display);font-weight:700;font-size:16.5px;margin-bottom:8px}
+  .term p{color:var(--mist);font-size:14px;line-height:1.65}
+
+  /* ---------- results ---------- */
+  .results{padding:clamp(60px,8vw,110px) 0 40px}
+  .rhead{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:8px}
+  .rhead h2{font-family:var(--display);font-weight:800;font-size:clamp(24px,3.2vw,38px);letter-spacing:-.025em}
+  .rhead h2 em{font-style:normal;color:var(--cobalt)}
+  .rhead .sum{font-size:14px;color:var(--mist);font-family:var(--mono);text-align:right;line-height:1.7} .rhead .sum b{color:var(--ink)}
+  .rnote{color:var(--mist);font-size:14.5px;max-width:64ch;margin:14px 0 32px;line-height:1.65}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;transition:.18s;display:flex;flex-direction:column;box-shadow:var(--shadow)}
+  .card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+  .card .thumb{height:120px;position:relative;background:linear-gradient(135deg,#EAF0FF,#F6F3EC);overflow:hidden}
+  .card .thumb .grid-o{position:absolute;inset:0;opacity:.6;background-image:linear-gradient(rgba(36,86,230,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(36,86,230,.08) 1px,transparent 1px);background-size:22px 22px}
+  .card .thumb .screen{position:absolute;inset:20px;border-radius:10px;border:1px solid rgba(36,86,230,.18);background:linear-gradient(135deg,rgba(36,86,230,.10),rgba(222,138,6,.08));display:grid;place-items:center}
+  .card .thumb .screen span{font-family:var(--mono);font-size:10px;color:var(--mist);letter-spacing:.08em}
+  .card .type{position:absolute;top:11px;left:11px;font-family:var(--mono);font-size:10.5px;font-weight:700;padding:4px 10px;border-radius:999px;letter-spacing:.04em;text-transform:uppercase}
+  .type.digital{background:var(--cobalt);color:#fff} .type.abri{background:var(--ink);color:#fff}
+  .card .match{position:absolute;top:11px;right:11px;font-family:var(--mono);font-size:11px;font-weight:700;padding:4px 9px;border-radius:999px;background:var(--ok-soft);color:var(--ok);border:1px solid #C4EBDA}
+  .card .body{padding:15px 16px 16px}
+  .card .loc{font-size:11px;color:var(--mist);font-weight:600;display:flex;align-items:center;gap:5px;margin-bottom:5px} .card .loc svg{color:var(--cobalt)}
+  .card h3{font-family:var(--display);font-weight:700;font-size:15.5px;letter-spacing:-.01em;line-height:1.25;margin-bottom:12px}
+  .card .stats{display:flex;justify-content:space-between;border-top:1px solid var(--line-2);padding-top:12px}
+  .card .stat .k{font-size:10.5px;color:var(--mist-2);text-transform:uppercase;letter-spacing:.03em;margin-bottom:2px;font-weight:600}
+  .card .stat .v{font-family:var(--mono);font-weight:700;font-size:14.5px} .card .stat .v.price{color:var(--amber-deep)}
+  .more{margin-top:28px;text-align:center;color:var(--mist);font-size:14px}
+
+  /* ---------- bioscoopstrook (het ene donkere accent) ---------- */
+  .cinema{position:relative;margin:clamp(60px,8vw,100px) 0 0;padding:clamp(70px,9vw,110px) 0;background:var(--night);overflow:hidden}
+  .cinema video,.cinema .cin-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55}
+  .cinema::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,15,30,.72),rgba(10,15,30,.28) 45%,rgba(10,15,30,.78))}
+  .cinema .in{position:relative;z-index:2;text-align:center;max-width:620px;margin:0 auto;padding:0 20px}
+  .cinema .eyebrow{color:#F5B63D} .cinema .eyebrow .pulse{background:#F5B63D}
+  .cinema h2{font-family:var(--display);font-weight:800;font-size:clamp(28px,4.2vw,48px);line-height:1.06;letter-spacing:-.025em;color:#fff;margin-bottom:16px}
+  .cinema p{color:rgba(255,255,255,.75);font-size:16.5px;line-height:1.65;margin-bottom:28px}
+  .cinema .btn-light{background:#fff;color:var(--ink);padding:16px 30px;font-size:16px;border-radius:999px}
+  .cinema .btn-light:hover{transform:translateY(-1px)}
+
+  /* ---------- testimonial ---------- */
+  .testi{padding:clamp(70px,9vw,120px) 0}
+  .testi .grid2{display:grid;grid-template-columns:.8fr 1.2fr;gap:clamp(30px,5vw,64px);align-items:center}
+  @media(max-width:860px){.testi .grid2{grid-template-columns:1fr;gap:34px}}
+  .testi .photo{min-height:440px}
+  .testi blockquote{font-family:var(--display);font-weight:700;font-size:clamp(22px,2.8vw,32px);line-height:1.32;letter-spacing:-.02em}
+  .testi blockquote .mark{color:var(--amber)}
+  .testi .who{margin-top:22px;display:flex;align-items:center;gap:12px;color:var(--mist);font-size:14.5px}
+  .testi .who .dot{width:9px;height:9px;border-radius:50%;background:var(--amber)}
+  .testi .who b{color:var(--ink);font-weight:700}
+
+  /* ---------- faq ---------- */
+  .faq{padding:clamp(70px,9vw,120px) 0;background:var(--paper-2);border-top:1px solid var(--line-2)}
+  .faq .head{max-width:600px;margin-bottom:40px} .faq h2.sec{margin-bottom:12px}
+  .qa{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:760px){.qa{grid-template-columns:1fr}}
+  .q{padding:26px;border-radius:var(--r);background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow)}
+  .q h4{font-family:var(--display);font-weight:700;font-size:16.5px;margin-bottom:9px;display:flex;gap:10px;align-items:flex-start}
+  .q h4 .qm{color:var(--cobalt);font-weight:800}
+  .q p{color:var(--mist);font-size:14.5px;line-height:1.65}
+
+  /* ---------- final cta ---------- */
+  .final{padding:clamp(80px,10vw,140px) 0;text-align:center;position:relative;overflow:hidden}
+  .final::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 80% at 50% 10%,rgba(222,138,6,.08),transparent 70%),radial-gradient(50% 70% at 80% 90%,rgba(36,86,230,.06),transparent 70%)}
+  .final .in{position:relative;max-width:640px;margin:0 auto;padding:0 20px}
+  .final h2{font-family:var(--display);font-weight:800;font-size:clamp(30px,4.6vw,52px);line-height:1.05;letter-spacing:-.03em;margin-bottom:18px}
+  .final h2 .accent{color:var(--cobalt)}
+  .final p{color:var(--mist);font-size:17px;margin-bottom:30px;line-height:1.65}
+  .final .subtle{margin-top:16px;font-size:13px;color:var(--mist-2)}
+
+  .footer{border-top:1px solid var(--line-2);padding:34px 0;color:var(--mist-2);font-size:13px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px}
+
+  @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body id="top">
+
+<div class="topbar"><div class="in">
+  <div class="brand"><span class="dot"></span>Global <small>Buitenreclame</small></div>
+  <nav class="topnav">
+    <a href="#how">Hoe het werkt</a>
+    <a href="#explain">Uitleg</a>
+    <a href="#faq">Vragen</a>
+    <a href="#top" class="pill">Bereken mijn bereik</a>
+  </nav>
+</div></div>
+
+<!-- ============ HERO / PLANNER ============ -->
+<section class="hero">
+  <img class="hero-bgposter" src="hero-poster.jpg" alt="" aria-hidden="true">
+  <video class="hero-bgvideo" autoplay muted loop playsinline poster="hero-poster.jpg">
+    <source src="hero.mp4" type="video/mp4">
+    <source src="hero.webm" type="video/webm">
+  </video>
+<div class="wrap hero-inner">
+  <div class="hero-copy">
+    <span class="eyebrow"><span class="pulse"></span>Buitenreclame voor het MKB · heel Nederland</span>
+    <h1>Zoveel mogelijk mensen.<br><span class="accent">Voor jouw budget.</span></h1>
+    <p class="lede">Nog nooit geadverteerd? Geen reclamebureau? Daar is dit voor gemaakt. Vertel wie je wilt bereiken en wat je kwijt wilt — je ziet meteen hoe ver je komt.</p>
+    <div class="trust">
+      <span><b>3.900</b> schermen &amp; abri's</span><span class="sep">·</span>
+      <span>Vaak live vanaf <b>morgen</b></span><span class="sep">·</span>
+      <span>Al vanaf <b>€250</b></span>
+    </div>
+  </div>
+
+  <div class="planner">
+    <div class="field">
+      <div class="plabel"><span class="step">1</span> Wie wil je bereiken?</div>
+      <div class="chips" id="chips"></div>
+    </div>
+    <div class="field">
+      <div class="plabel"><span class="step">2</span> Waar?</div>
+      <div class="selectwrap"><select id="region"></select></div>
+    </div>
+    <div class="field">
+      <div class="plabel"><span class="step">3</span> Wat wil je uitgeven?</div>
+      <div class="budgetrow">
+        <div class="budgetval mono" id="budgetVal">€2.000</div>
+        <div class="weeks">
+          <button class="stepbtn" id="wMinus" aria-label="Minder weken">–</button>
+          <span class="wval" id="weeksVal">2 weken</span>
+          <button class="stepbtn" id="wPlus" aria-label="Meer weken">+</button>
+        </div>
+      </div>
+      <input type="range" id="budget" min="250" max="12000" step="50" value="2000">
+      <div class="rangeticks"><span>€250</span><span>€3k</span><span>€6k</span><span>€12k</span></div>
+    </div>
+
+    <div class="readout">
+      <div class="rlabel">Geschat bereik</div>
+      <div class="reachnum"><span class="approx">≈</span><span id="reach">0</span></div>
+      <div class="reachsub" id="reachSub">unieke mensen</div>
+      <div class="valuetag">
+        <svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        <div><span id="dedupText"></span></div>
+      </div>
+      <div id="nudgeSlot"></div>
+      <div id="floorSlot"></div>
+      <button class="cta" id="cta"><span id="ctaText">Bekijk mijn schermen</span>
+        <svg class="arr" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
+      <div class="reassure">Geen account nodig · geen verplichting · je ziet eerst alles</div>
+    </div>
+  </div>
+</div></section>
+
+<!-- ============ VOOR JOU ============ -->
+<section class="voorjou"><div class="wrap grid2">
+  <div>
+    <span class="eyebrow warm"><span class="pulse"></span>Voor jou gemaakt</span>
+    <h2 class="sec">Je hoeft er geen <em>verstand</em> van te hebben</h2>
+    <p class="lead">Grote merken hebben mediabureaus die dit voor ze regelen. Jij — de bakker, de bloemist, de sportschool op de hoek — hebt dat niet. En dat hoeft ook niet.</p>
+    <p class="lead">Daarom stellen we geen vragen die je niet kunt beantwoorden. Geen "CPM", geen "GRP's", geen vakjargon. Je vertelt gewoon wie je klanten zijn en wat je te besteden hebt. Wij vertalen dat naar de schermen waar die mensen echt langslopen — en houden de dubbeltellers eruit, zodat je bereik klopt.</p>
+    <div class="btnrow"><a href="#top" class="btn btn-primary">Start zonder verplichting <span class="arr">→</span></a></div>
+  </div>
+  <div class="photo">
+    <img src="photo-florist.png" alt="Bloemist voor haar winkel" onerror="if(!this.dataset.f){this.dataset.f=1;this.src='photo-florist.jpg'}else{this.style.display='none'}">
+    <div class="ph-fallback">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg>
+      <span>Foto — bloemist voor haar winkel</span>
+    </div>
+  </div>
+</div></section>
+
+<!-- ============ ZO WERKT HET ============ -->
+<section class="how" id="how"><div class="wrap">
+  <div class="head">
+    <span class="eyebrow"><span class="pulse"></span>Zo werkt het</span>
+    <h2 class="sec">In drie stappen <em>op straat</em></h2>
+    <p class="lead">Van "ik heb geen idee waar ik moet beginnen" naar een advertentie die mensen zien — meestal al de volgende dag.</p>
+  </div>
+  <div class="layout">
+    <div class="steps">
+      <div class="stepcard"><div class="no">1</div><div>
+        <h3>Vertel wie je wilt bereiken</h3>
+        <p>Kies je klant en je stad. Meer niet. Je ziet meteen hoeveel mensen je kunt bereiken en wat het kost — geen offerte aanvragen, geen dagen wachten op een verkoper.</p>
+      </div></div>
+      <div class="stepcard"><div class="no">2</div><div>
+        <h3>Wij kiezen de beste plekken</h3>
+        <p>Global zoekt de schermen op waar jouw klanten echt langskomen. Bij elk scherm zie je de straat, de wijk en waarom het bij je past — dus je weet altijd wat je boekt en waar het hangt.</p>
+      </div></div>
+      <div class="stepcard"><div class="no">3</div><div>
+        <h3>Zet je advertentie erop</h3>
+        <p>Heb je al een ontwerp? Upload het. Heb je er nog geen? Typ je aanbieding en laat er in een paar klikken eentje maken die er professioneel uitziet én aan de regels van de gemeente voldoet.</p>
+        <span class="tag">Ontwerp maken met AI — geen ontwerper nodig</span>
+      </div></div>
+    </div>
+    <div class="photo">
+      <img src="photo-cafe.png" alt="Ondernemer regelt zijn campagne op een laptop" onerror="if(!this.dataset.f){this.dataset.f=1;this.src='photo-cafe.jpg'}else{this.style.display='none'}">
+      <div class="ph-fallback">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M2 20h20"/></svg>
+        <span>Foto — ondernemer regelt het zelf</span>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- ============ UITLEG ============ -->
+<section class="explain" id="explain"><div class="wrap">
+  <div class="head">
+    <span class="eyebrow warm"><span class="pulse"></span>Even in gewone taal</span>
+    <h2 class="sec">Wat is buitenreclame <em>eigenlijk</em>?</h2>
+    <p class="lead">Kort, zonder jargon. Genoeg om te snappen wat je koopt — meer hoef je echt niet te weten.</p>
+  </div>
+  <div class="terms">
+    <div class="term">
+      <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="1"/><path d="M8 21v-4h8v4"/></svg></div>
+      <h4>Abri</h4>
+      <p>Het reclamebord in een bushokje of langs de stoep. Een gedrukte poster die iedereen die langsloopt of -rijdt ziet. Vertrouwd, en altijd zichtbaar.</p>
+    </div>
+    <div class="term">
+      <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+      <h4>Digitaal scherm</h4>
+      <p>Hetzelfde idee, maar een beeldscherm. Je advertentie wisselt af met andere. Je kunt 'm zelfs per dagdeel aanpassen — 's ochtends koffie, 's avonds borrel.</p>
+    </div>
+    <div class="term">
+      <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+      <h4>Bereik</h4>
+      <p>Het aantal échte mensen dat je advertentie voorbij ziet komen. Twee schermen dicht bij elkaar zien vaak dezelfde mensen — die tellen wij maar één keer. Geen opgeblazen cijfers.</p>
+    </div>
+    <div class="term">
+      <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+      <h4>Weken draaien</h4>
+      <p>Hoe langer je advertentie hangt, hoe vaker dezelfde mensen 'm zien — en dus onthouden. Eén week is vaak te kort om te blijven hangen. Twee weken is een fijne start.</p>
+    </div>
+  </div>
+</div></section>
+
+<!-- ============ RESULTS ============ -->
+<section class="results" id="results"><div class="wrap">
+  <div class="rhead">
+    <h2>Zo ziet jouw plan eruit: <em id="rCount">0 schermen</em></h2>
+    <div class="sum" id="rSum"></div>
+  </div>
+  <p class="rnote" id="rNote"></p>
+  <div class="grid" id="grid"></div>
+  <div class="more" id="more"></div>
+</div></section>
+
+<!-- ============ BIOSCOOPSTROOK ============ -->
+<section class="cinema">
+  <img class="cin-poster" src="photo-street.png" alt="" aria-hidden="true" onerror="if(!this.dataset.f){this.dataset.f=1;this.src='photo-street.jpg'}else{this.src='hero-poster.jpg'}">
+  <div class="in">
+    <span class="eyebrow"><span class="pulse"></span>Vanavond op straat</span>
+    <h2>Jouw zaak, groot in het straatbeeld</h2>
+    <p>Precies waar je klanten langslopen — op weg naar werk, naar de winkel, naar huis. Dat moment is dichterbij dan je denkt: vaak al morgen.</p>
+    <a href="#top" class="btn btn-light">Bereken mijn bereik <span class="arr">→</span></a>
+  </div>
+</section>
+
+<!-- ============ TESTIMONIAL ============ -->
+<section class="testi"><div class="wrap grid2">
+  <div class="photo">
+    <img src="photo-bakery.png" alt="Bakker in haar winkel" onerror="if(!this.dataset.f){this.dataset.f=1;this.src='photo-bakery.jpg'}else{this.style.display='none'}">
+    <div class="ph-fallback">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
+      <span>Foto — bakker in haar winkel</span>
+    </div>
+  </div>
+  <div>
+    <span class="eyebrow warm"><span class="pulse"></span>Van een ondernemer zoals jij</span>
+    <blockquote><span class="mark">"</span>Ik dacht dat adverteren op straat alleen iets was voor de grote ketens. Ik ben klein begonnen met twee schermen bij mij in de buurt. Binnen een week liepen er mensen binnen die 'dat bord' hadden gezien.<span class="mark">"</span></blockquote>
+    <div class="who"><span class="dot"></span><span><b>Sanne</b> — bakkerij, Utrecht</span></div>
+  </div>
+</div></section>
+
+<!-- ============ FAQ ============ -->
+<section class="faq" id="faq"><div class="wrap">
+  <div class="head">
+    <span class="eyebrow"><span class="pulse"></span>Eerlijk antwoord</span>
+    <h2 class="sec">Vragen die je vast hebt</h2>
+    <p class="lead">Je bent vast niet de enige die dit denkt. Daarom hier gewoon het eerlijke antwoord.</p>
+  </div>
+  <div class="qa">
+    <div class="q"><h4><span class="qm">?</span>Ik heb geen ervaring met adverteren. Kan ik dit wel?</h4><p>Ja. Als je kunt vertellen wie je klanten zijn, kun je dit. De rest doet de tool — die kiest de plekken, rekent het bereik uit en houdt je binnen budget.</p></div>
+    <div class="q"><h4><span class="qm">?</span>Wat als ik nog geen advertentie heb?</h4><p>Dan maak je er hier eentje. Je typt je aanbieding, en je krijgt een verzorgd ontwerp terug dat aan de regels van de gemeente voldoet. Geen ontwerper of bureau nodig.</p></div>
+    <div class="q"><h4><span class="qm">?</span>Kan ik klein beginnen?</h4><p>Zeker. Vanaf €250. Eén scherm bij jou in de buurt is een prima manier om te kijken wat het doet, voordat je opschaalt.</p></div>
+    <div class="q"><h4><span class="qm">?</span>Zit ik ergens aan vast?</h4><p>Nee. Je kiest zelf hoe lang je draait. Geen abonnement, geen contract met een bureau, geen kleine lettertjes. Klaar is klaar.</p></div>
+  </div>
+</div></section>
+
+<!-- ============ FINAL CTA ============ -->
+<section class="final">
+  <div class="in">
+    <h2>Klaar om <span class="accent">gezien</span> te worden?</h2>
+    <p>Kijk in één minuut hoe ver jouw budget reikt. Zonder account, zonder verplichting — gewoon om te zien wat er mogelijk is.</p>
+    <a href="#top" class="btn btn-primary">Bekijk mijn bereik <span class="arr">→</span></a>
+    <div class="subtle">Al 3.900 schermen door heel Nederland · vaak live vanaf morgen</div>
+  </div>
+</section>
+
+<div class="footer wrap">
+  <span>© Global Buitenreclame — conceptdemo. Foto's: Higgsfield. Testimonial ter illustratie.</span>
+  <span>Bereik = unieke mensen, overlap eruit gerekend · prijzen per week</span>
+</div>
+
+<script>
+/* ================= DATA (vorm = 3.900 echte schermen) ================= */
+const AUDIENCES=['Forensen','Gezinnen','Studenten','Sportievelingen','Zakelijk publiek'];
+const CITY_PROFILES=[
+ {city:'Amsterdam',prov:'Noord-Holland',n:26,lat:52.37,lng:4.90,w:{Studenten:.9,'Zakelijk publiek':.9,Forensen:.9,Gezinnen:.5,Sportievelingen:.5},areas:['Centrum','Zuid','De Pijp','Oost','Zuidas','Station Sloterdijk','Nieuw-West']},
+ {city:'Rotterdam',prov:'Zuid-Holland',n:22,lat:51.92,lng:4.48,w:{Forensen:.9,'Zakelijk publiek':.8,Studenten:.7,Gezinnen:.6,Sportievelingen:.5},areas:['Centrum','Blaak','Kop van Zuid','Alexander','Delfshaven','Noord']},
+ {city:'Den Haag',prov:'Zuid-Holland',n:18,lat:52.08,lng:4.31,w:{'Zakelijk publiek':.9,Forensen:.8,Gezinnen:.6,Studenten:.5,Sportievelingen:.5},areas:['Centrum','Beatrixkwartier','Scheveningen','Ypenburg','Station HS']},
+ {city:'Utrecht',prov:'Utrecht',n:20,lat:52.09,lng:5.12,w:{Studenten:.95,Forensen:.9,'Zakelijk publiek':.7,Gezinnen:.6,Sportievelingen:.6},areas:['Hoog Catharijne','Centrum','Uithof','Leidsche Rijn','Overvecht']},
+ {city:'Eindhoven',prov:'Noord-Brabant',n:14,lat:51.44,lng:5.48,w:{Studenten:.8,'Zakelijk publiek':.8,Forensen:.7,Gezinnen:.6,Sportievelingen:.6},areas:['Centrum','Strijp-S','Station','High Tech Campus','Woensel']},
+ {city:'Groningen',prov:'Groningen',n:12,lat:53.22,lng:6.57,w:{Studenten:.95,Gezinnen:.5,Forensen:.5,Sportievelingen:.6,'Zakelijk publiek':.5},areas:['Grote Markt','Centrum','Zernike','Station']},
+ {city:'Tilburg',prov:'Noord-Brabant',n:10,lat:51.56,lng:5.09,w:{Studenten:.7,Gezinnen:.7,Forensen:.6,Sportievelingen:.6,'Zakelijk publiek':.5},areas:['Centrum','Spoorzone','Reeshof']},
+ {city:'Nijmegen',prov:'Gelderland',n:10,lat:51.84,lng:5.86,w:{Studenten:.85,Gezinnen:.6,Sportievelingen:.6,Forensen:.5,'Zakelijk publiek':.5},areas:['Centrum','Heyendaal','Station','Lent']},
+ {city:'Breda',prov:'Noord-Brabant',n:9,lat:51.59,lng:4.78,w:{Gezinnen:.7,Forensen:.6,Studenten:.6,'Zakelijk publiek':.5,Sportievelingen:.6},areas:['Centrum','Station','Ginneken']},
+ {city:'Haarlem',prov:'Noord-Holland',n:8,lat:52.38,lng:4.64,w:{Gezinnen:.8,'Zakelijk publiek':.6,Forensen:.6,Sportievelingen:.6,Studenten:.4},areas:['Grote Markt','Centrum','Schalkwijk']},
+ {city:'Amersfoort',prov:'Utrecht',n:8,lat:52.16,lng:5.39,w:{Forensen:.8,Gezinnen:.7,'Zakelijk publiek':.6,Sportievelingen:.5,Studenten:.4},areas:['Centrum','Station','Vathorst']},
+ {city:'Arnhem',prov:'Gelderland',n:8,lat:51.98,lng:5.90,w:{Gezinnen:.7,Forensen:.6,Studenten:.6,Sportievelingen:.6,'Zakelijk publiek':.5},areas:['Centrum','Station','Presikhaaf']},
+ {city:'Maastricht',prov:'Limburg',n:8,lat:50.85,lng:5.69,w:{Studenten:.8,Gezinnen:.6,'Zakelijk publiek':.5,Forensen:.5,Sportievelingen:.5},areas:['Vrijthof','Centrum','Wyck','Station']},
+ {city:'Zwolle',prov:'Overijssel',n:7,lat:52.51,lng:6.09,w:{Forensen:.7,Gezinnen:.7,Studenten:.6,'Zakelijk publiek':.5,Sportievelingen:.5},areas:['Centrum','Station','Stadshagen']},
+ {city:'Leiden',prov:'Zuid-Holland',n:8,lat:52.16,lng:4.49,w:{Studenten:.85,Gezinnen:.6,Forensen:.6,'Zakelijk publiek':.5,Sportievelingen:.5},areas:['Centrum','Station','Bio Science Park']},
+];
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const rng=mulberry32(20260710);const pick=a=>a[Math.floor(rng()*a.length)];const round=(v,s)=>Math.round(v/s)*s;
+function genScreens(){const out=[];let id=0;for(const c of CITY_PROFILES){for(let i=0;i<c.n;i++){const digital=rng()<0.58;const area=pick(c.areas);let auds=AUDIENCES.filter(a=>rng()<(c.w[a]||.4)*0.85);if(auds.length===0)auds=[pick(AUDIENCES)];const weeklyReach=digital?round(70000+rng()*250000,1000):round(35000+rng()*115000,1000);const weeklyPrice=digital?round(210+rng()*430,5):round(110+rng()*200,5);out.push({id:'s'+(id++),name:`${area} ${digital?'Digitaal Scherm':'Abri'}`,city:c.city,area,province:c.prov,type:digital?'digital':'abri',weeklyReach,weeklyPrice,audiences:auds,lat:c.lat+(rng()-.5)*.05,lng:c.lng+(rng()-.5)*.05})}}return out}
+const SCREENS=genScreens();
+
+/* ================= ENGINE (→ campaignEngine.ts) ================= */
+const CITY_DECAY=0.72, OFFTARGET=0.35;
+const matchFactor=(s,aud)=>!aud?0.8:(s.audiences.includes(aud)?1:OFFTARGET);
+function inRegion(s,region){if(region==='NL')return true;if(region.startsWith('prov:'))return s.province===region.slice(5);if(region.startsWith('city:'))return s.city===region.slice(5);return true}
+function uniqueReach(selected,aud){const byCity={};for(const s of selected){(byCity[s.city]=byCity[s.city]||[]).push(s)}let net=0,raw=0;for(const city in byCity){const arr=byCity[city].map(s=>({s,val:s.weeklyReach*matchFactor(s,aud)})).sort((a,b)=>b.val-a.val);arr.forEach((o,i)=>{net+=o.val*Math.pow(CITY_DECAY,i);raw+=o.val})}return{net:Math.round(net),raw:Math.round(raw)}}
+function planCampaign({region,aud,budget,weeks}){
+  const pool=SCREENS.filter(s=>inRegion(s,region)).map(s=>({s,mf:matchFactor(s,aud)})).map(o=>({...o,score:(o.s.weeklyReach*o.mf)/o.s.weeklyPrice})).sort((a,b)=>b.score-a.score);
+  const selected=[];let spend=0;const rest=[];
+  for(const o of pool){const cost=o.s.weeklyPrice*weeks;if(spend+cost<=budget){selected.push(o.s);spend+=cost}else rest.push(o.s)}
+  const {net,raw}=uniqueReach(selected,aud);
+  const cityCount={};selected.forEach(s=>cityCount[s.city]=(cityCount[s.city]||0)+1);
+  const nudges=rest.map(s=>{const k=cityCount[s.city]||0;const marginal=Math.round(s.weeklyReach*matchFactor(s,aud)*Math.pow(CITY_DECAY,k));return{s,marginal,cost:s.weeklyPrice*weeks}}).filter(n=>n.marginal>0).sort((a,b)=>b.marginal-a.marginal);
+  let floor=null;const minCost=pool.length?Math.min(...pool.map(o=>o.s.weeklyPrice))*weeks:0;
+  if(selected.length===0)floor={type:'empty',minCost:Math.ceil(minCost/50)*50};else if(weeks<2)floor={type:'weeks'};
+  return{selected,spend,net,raw,nudges,floor,weeks,poolSize:pool.length};
+}
+
+/* ================= UI ================= */
+const fmt=n=>n.toLocaleString('nl-NL');const euro=n=>'€'+n.toLocaleString('nl-NL');
+const state={aud:'Studenten',region:'NL',budget:2000,weeks:2};
+const chipsEl=document.getElementById('chips');
+AUDIENCES.forEach(a=>{const b=document.createElement('button');b.className='chip'+(a===state.aud?' on':'');b.textContent=a;b.dataset.aud=a;b.onclick=()=>{state.aud=a;[...chipsEl.children].forEach(c=>c.classList.toggle('on',c.dataset.aud===a));render()};chipsEl.appendChild(b)});
+const regionEl=document.getElementById('region');
+const provs=[...new Set(CITY_PROFILES.map(c=>c.prov))].sort();
+const cities=CITY_PROFILES.map(c=>c.city).sort();
+regionEl.innerHTML=`<option value="NL">Heel Nederland</option><optgroup label="Provincie">`+provs.map(p=>`<option value="prov:${p}">${p}</option>`).join('')+`</optgroup><optgroup label="Stad">`+cities.map(c=>`<option value="city:${c}">${c}</option>`).join('')+`</optgroup>`;
+regionEl.onchange=()=>{state.region=regionEl.value;render()};
+const budgetEl=document.getElementById('budget');budgetEl.oninput=()=>{state.budget=+budgetEl.value;render()};
+document.getElementById('wMinus').onclick=()=>{state.weeks=Math.max(1,state.weeks-1);render()};
+document.getElementById('wPlus').onclick=()=>{state.weeks=Math.min(8,state.weeks+1);render()};
+document.getElementById('cta').onclick=()=>document.getElementById('results').scrollIntoView({behavior:'smooth'});
+const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let tweenId=null,shownReach=0;
+function setReach(target){cancelAnimationFrame(tweenId);if(reduce){shownReach=target;document.getElementById('reach').textContent=fmt(target);return}const start=shownReach,t0=performance.now(),dur=520;const step=now=>{const p=Math.min(1,(now-t0)/dur),e=1-Math.pow(1-p,3);shownReach=Math.round(start+(target-start)*e);document.getElementById('reach').textContent=fmt(shownReach);if(p<1)tweenId=requestAnimationFrame(step)};tweenId=requestAnimationFrame(step)}
+function render(){
+  const plan=planCampaign(state);
+  const pct=((state.budget-250)/(12000-250))*100;budgetEl.style.setProperty('--fill',pct+'%');
+  document.getElementById('budgetVal').innerHTML=euro(state.budget)+' <span>totaal</span>';
+  document.getElementById('weeksVal').textContent=state.weeks+(state.weeks===1?' week':' weken');
+  setReach(plan.net);
+  const regionLabel=state.region==='NL'?'heel Nederland':state.region.replace(/^(prov|city):/,'');
+  document.getElementById('reachSub').innerHTML=`unieke mensen in <b>${regionLabel}</b> · <b>${plan.selected.length}</b> schermen · <b>${state.weeks}</b> ${state.weeks===1?'week':'weken'}`;
+  const removed=plan.raw-plan.net;const pctRemoved=plan.raw?Math.round(removed/plan.raw*100):0;const dedup=document.getElementById('dedupText');
+  if(plan.selected.length>1&&removed>0){dedup.innerHTML=`Dubbeltellers eruit: <b>${fmt(plan.raw)}</b> bruto contacten werden <b>${fmt(plan.net)}</b> échte mensen <span class="dim">(${pctRemoved}% overlap weggerekend)</span>`}
+  else{dedup.innerHTML=`Dit zijn <b>unieke</b> mensen — geen opgeblazen impressiecijfers.`}
+  const nSlot=document.getElementById('nudgeSlot');nSlot.innerHTML='';
+  const best=plan.nudges.find(n=>n.cost<=Math.max(400,state.budget*0.6))||plan.nudges[0];
+  if(best&&state.budget<12000){const div=document.createElement('div');div.className='nudge';div.innerHTML=`<span class="up"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg></span><div class="ntext"><span class="plus">+${fmt(best.marginal)}</span> bereik voor <b>${euro(best.cost)}</b> extra — pakt <b>${best.s.area}, ${best.s.city}</b> erbij.</div><button class="nadd">Voeg toe</button>`;div.querySelector('.nadd').onclick=()=>{state.budget=Math.min(12000,state.budget+best.cost);budgetEl.value=state.budget;render()};nSlot.appendChild(div)}
+  const fSlot=document.getElementById('floorSlot');fSlot.innerHTML='';
+  if(plan.floor){const div=document.createElement('div');div.className='floor';const warn=`<svg class="ic" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
+    if(plan.floor.type==='empty'){div.innerHTML=`${warn}<div>Met dit budget past nog geen volledige week op één scherm. <span class="fix" id="fixEmpty">Zet op ${euro(plan.floor.minCost)}</span> — dan draait je eerste scherm.</div>`;fSlot.appendChild(div);document.getElementById('fixEmpty').onclick=()=>{state.budget=plan.floor.minCost;budgetEl.value=state.budget;render()}}
+    else if(plan.floor.type==='weeks'){div.innerHTML=`${warn}<div>Je campagne draait maar <b>7 dagen</b>. De meeste mensen zien 'm dan te weinig om 'm te onthouden — <b>zonde van je bereik</b>. <span class="fix" id="fixWeeks">Maak er 2 weken van</span> voor hetzelfde bereik, veel effectiever.</div>`;fSlot.appendChild(div);document.getElementById('fixWeeks').onclick=()=>{state.weeks=2;render()}}}
+  document.getElementById('ctaText').textContent=plan.selected.length?`Bekijk mijn ${plan.selected.length} schermen`:'Kies een startbudget';
+  renderResults(plan,regionLabel);
+}
+function renderResults(plan,regionLabel){
+  document.getElementById('rCount').textContent=plan.selected.length+(plan.selected.length===1?' scherm':' schermen');
+  document.getElementById('rSum').innerHTML=`<b>${euro(plan.spend)}</b> voor ${state.weeks} ${state.weeks===1?'week':'weken'}<br><b>${fmt(plan.net)}</b> unieke mensen`;
+  document.getElementById('rNote').innerHTML=`Dit is de goedkoopste bundel die je bereik maximaliseert onder <b>${regionLabel}</b> voor de doelgroep <b>${state.aud.toLowerCase()}</b>. Gerangschikt op relevant bereik per euro. Stad, wijk en doelgroep-match staan overal in beeld — je weet altijd wat je boekt en waar het hangt.`;
+  const grid=document.getElementById('grid');grid.innerHTML='';
+  for(const s of plan.selected.slice(0,12)){const mf=matchFactor(s,state.aud);const matchPct=Math.round(mf*100);const el=document.createElement('div');el.className='card';el.innerHTML=`<div class="thumb"><div class="grid-o"></div><div class="screen"><span>${s.type==='digital'?'DIGITAAL':'ABRI'}</span></div><span class="type ${s.type}">${s.type}</span>${mf===1?`<span class="match">${matchPct}% match</span>`:''}</div><div class="body"><div class="loc"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${s.area} · ${s.city}</div><h3>${s.name}</h3><div class="stats"><div class="stat"><div class="k">Bereik/week</div><div class="v">${fmt(s.weeklyReach)}</div></div><div class="stat" style="text-align:right"><div class="k">Prijs/week</div><div class="v price">${euro(s.weeklyPrice)}</div></div></div></div>`;grid.appendChild(el)}
+  document.getElementById('more').textContent=plan.selected.length>12?`+ nog ${plan.selected.length-12} schermen in je plan`:'';
+}
+render();
+</script>
+</body>
+</html>

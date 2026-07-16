@@ -1,0 +1,107 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800;950&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+/* ===========================================================================
+   Design tokens — ported 1:1 from design/reference.html (:root).
+   Exposed as Tailwind v4 @theme tokens so utilities like bg-paper, text-ink,
+   border-line, rounded-card and shadow-soft are generated. The plain aliases
+   in :root below mirror the reference variable names (var(--paper), var(--r),
+   var(--shadow)) so ported CSS keeps working verbatim.
+   =========================================================================== */
+@theme {
+  /* fonts (unchanged — already present) */
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Poppins", "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* neutrals / paper */
+  --color-paper: #FBFAF7;
+  --color-paper-2: #F4F1EA;
+  --color-card: #FFFFFF;
+  --color-ink: #16213A;
+  --color-mist: #5B6B85;
+  --color-mist-2: #8B97AB;
+  --color-line: #E8E5DC;
+  --color-line-2: #EFEDE6;
+
+  /* cobalt (primary action) */
+  --color-cobalt: #2456E6;
+  --color-cobalt-deep: #1D46C4;
+  --color-cobalt-soft: #EAF0FF;
+
+  /* amber (reach / price accent) */
+  --color-amber: #DE8A06;
+  --color-amber-deep: #C67B04;
+  --color-amber-soft: #FDF3E1;
+  --color-amber-line: #F3DCB2;
+
+  /* ok (positive) */
+  --color-ok: #0E9F6E;
+  --color-ok-soft: #E8F7F0;
+
+  /* the single dark accent */
+  --color-night: #0A0F1E;
+
+  /* radii — reference --r (22px) / --r-sm (14px) → rounded-card / rounded-card-sm */
+  --radius-card: 22px;
+  --radius-card-sm: 14px;
+
+  /* the two signature shadows → shadow-soft / shadow-soft-lg */
+  --shadow-soft: 0 2px 6px rgba(22, 33, 58, .05), 0 18px 44px -18px rgba(22, 33, 58, .14);
+  --shadow-soft-lg: 0 4px 10px rgba(22, 33, 58, .06), 0 30px 70px -24px rgba(22, 33, 58, .20);
+}
+
+/* Raw aliases with the exact reference names, for verbatim var() usage. */
+:root {
+  --paper: #FBFAF7;
+  --paper-2: #F4F1EA;
+  --card: #FFFFFF;
+  --ink: #16213A;
+  --mist: #5B6B85;
+  --mist-2: #8B97AB;
+  --line: #E8E5DC;
+  --line-2: #EFEDE6;
+  --cobalt: #2456E6;
+  --cobalt-deep: #1D46C4;
+  --cobalt-soft: #EAF0FF;
+  --amber: #DE8A06;
+  --amber-deep: #C67B04;
+  --amber-soft: #FDF3E1;
+  --amber-line: #F3DCB2;
+  --ok: #0E9F6E;
+  --ok-soft: #E8F7F0;
+  --night: #0A0F1E;
+  --r: 22px;
+  --r-sm: 14px;
+  --shadow: 0 2px 6px rgba(22, 33, 58, .05), 0 18px 44px -18px rgba(22, 33, 58, .14);
+  --shadow-lg: 0 4px 10px rgba(22, 33, 58, .06), 0 30px 70px -24px rgba(22, 33, 58, .20);
+}
+
+/* Light paper base (replaces the old slate/dark body styling). */
+body {
+  font-family: var(--font-sans);
+  background-color: var(--paper);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.55;
+}
+
+h1, h2, h3, h4, .font-heading {
+  font-family: var(--font-display);
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
