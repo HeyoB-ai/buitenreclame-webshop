@@ -83,11 +83,22 @@ export const provincieClaim = (): string =>
     : `${PROVINCES.length} provincies`;
 
 /**
- * Cheapest weekly rate across the inventory. NOTE: `weeklyPrice` is marked
- * "schatting" in every record, so anything built on this must read as a guide
- * price — never a quote.
+ * Cheapest weekly rate you can actually book right now.
+ *
+ * Deliberately counts only gemeenten with displays left. The cheapest rate in
+ * the data is Ameland at €250, but Ameland is sold out — advertising "vanaf
+ * €250" would put a price in the hero that the planner then rejects as too low
+ * on the very same screen. Sold-out gemeenten are excluded so the headline
+ * price and the planner can never contradict each other.
+ *
+ * NOTE: `weeklyPrice` is marked "schatting" in every record, so anything built
+ * on this must read as a guide price — never a quote.
  */
-export const MIN_WEEKPRIJS = Math.min(...GEMEENTEN.map((g) => g.weeklyPrice));
+export const MIN_WEEKPRIJS: number = (() => {
+  const boekbaar = GEMEENTEN.filter((g) => g.displaysVrij > 0);
+  const pool = boekbaar.length ? boekbaar : GEMEENTEN;
+  return Math.min(...pool.map((g) => g.weeklyPrice));
+})();
 
 /**
  * Weekly reach for a gemeente: the buyers ESH counts × the share it promises to

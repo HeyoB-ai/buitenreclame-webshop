@@ -8,7 +8,7 @@ export default function VoorJou() {
           <span className="eyebrow warm"><span className="pulse" />Voor jou gemaakt</span>
           <h2 className="sec">Je hoeft er geen <em>verstand</em> van te hebben</h2>
           <p className="lead">Grote merken hebben mediabureaus die dit voor ze regelen. Jij — de bakker, de bloemist, de sportschool op de hoek — hebt dat niet. En dat hoeft ook niet.</p>
-          <p className="lead">Daarom stellen we geen vragen die je niet kunt beantwoorden. Geen "CPM", geen "GRP's", geen vakjargon. Je vertelt gewoon wie je klanten zijn en wat je te besteden hebt. Wij vertalen dat naar de schermen waar die mensen echt langslopen — en houden de dubbeltellers eruit, zodat je bereik klopt.</p>
+          <p className="lead">Daarom stellen we geen vragen die je niet kunt beantwoorden. Geen "CPM", geen "GRP's", geen vakjargon. Je vertelt gewoon wie je klanten zijn en wat je te besteden hebt. Wij vertalen dat naar de gemeenten waar die mensen wonen — elke gemeente apart geteld, zodat je bereik klopt.</p>
           <div className="btnrow">
             <a href="#top" className="btn btn-primary">Start zonder verplichting <span className="arr">→</span></a>
           </div>

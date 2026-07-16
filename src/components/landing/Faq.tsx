@@ -1,3 +1,5 @@
+import { MIN_WEEKPRIJS, ADVIES_MAX_WEKEN } from '../../data/gemeenten';
+
 export default function Faq() {
   return (
     <section className="faq" id="faq">
@@ -18,11 +20,11 @@ export default function Faq() {
           </div>
           <div className="q">
             <h4><span className="qm">?</span>Kan ik klein beginnen?</h4>
-            <p>Zeker. Vanaf €250. Eén scherm bij jou in de buurt is een prima manier om te kijken wat het doet, voordat je opschaalt.</p>
+            <p>Zeker. Richtprijs vanaf €{MIN_WEEKPRIJS} per week. Eén gemeente bij jou in de buurt is een prima manier om te kijken wat het doet, voordat je opschaalt.</p>
           </div>
           <div className="q">
             <h4><span className="qm">?</span>Zit ik ergens aan vast?</h4>
-            <p>Nee. Je kiest zelf hoe lang je draait. Geen abonnement, geen contract met een bureau, geen kleine lettertjes. Klaar is klaar.</p>
+            <p>Nee. Je kiest zelf hoe lang je draait — ESH adviseert maximaal {ADVIES_MAX_WEKEN} weken. Geen abonnement, geen contract met een bureau, geen kleine lettertjes. Wel goed om te weten: je materiaal moet 21 dagen voor de plaatsingsdag binnen zijn.</p>
           </div>
         </div>
       </div>

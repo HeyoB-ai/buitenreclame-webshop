@@ -304,7 +304,7 @@ export default function AICreationModal({
                     key={sc.id}
                     type="button"
                     onClick={() => onUseExisting(sc)}
-                    title={`${sc.title} — toepassen op dit scherm`}
+                    title={`${sc.title} — toepassen op deze gemeente`}
                     className="group relative shrink-0 w-14 rounded-md overflow-hidden border-2 border-line hover:border-cobalt transition-all cursor-pointer bg-paper-2 aspect-[841/1189]"
                   >
                     <img src={sc.previewUrl} alt={sc.title} className="absolute inset-0 w-full h-full object-cover" />

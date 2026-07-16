@@ -70,7 +70,7 @@ export default function LocationDetailModal({
             <div className="space-y-1.5">
               <h4 className="text-sm font-bold text-ink flex items-center gap-1.5">
                 <MapPin className="w-4 h-4 text-cobalt" />
-                <span>Waar hangt dit scherm?</span>
+                <span>Waar hangt dit?</span>
               </h4>
               <p className="text-xs text-mist leading-relaxed">
                 In <strong className="text-ink">{location.city}</strong>, bij <strong className="text-ink">{location.street}</strong>.
