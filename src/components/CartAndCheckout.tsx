@@ -230,7 +230,7 @@ export default function CartAndCheckout({
               <ShoppingBag className="w-12 h-12 text-mist-2 mx-auto" />
               <div className="space-y-1">
                 <p className="text-sm font-semibold text-ink">Winkelmand is nog leeg</p>
-                <p className="text-xs text-mist">Voeg een abri of digitaal scherm toe uit onze aanbevelingen om te starten.</p>
+                <p className="text-xs text-mist">Voeg een gemeente toe uit je plan om te starten.</p>
               </div>
               <button
                 onClick={onBackToLocations}

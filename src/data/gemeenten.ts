@@ -69,6 +69,26 @@ export const GEMEENTE_NAMEN: string[] = GEMEENTEN.map((g) => g.name)
 export const MIN_WEKEN = 1;
 export const ADVIES_MAX_WEKEN = 3;
 
+/** The Netherlands has twelve provinces. */
+const NL_PROVINCIES = 12;
+
+/**
+ * Coverage claim for the marketing copy, derived from the data so it cannot
+ * drift into a lie: it only says "alle 12" while the data actually spans all
+ * twelve. Add or drop gemeenten and the sentence corrects itself.
+ */
+export const provincieClaim = (): string =>
+  PROVINCES.length === NL_PROVINCIES
+    ? `alle ${NL_PROVINCIES} provincies`
+    : `${PROVINCES.length} provincies`;
+
+/**
+ * Cheapest weekly rate across the inventory. NOTE: `weeklyPrice` is marked
+ * "schatting" in every record, so anything built on this must read as a guide
+ * price — never a quote.
+ */
+export const MIN_WEEKPRIJS = Math.min(...GEMEENTEN.map((g) => g.weeklyPrice));
+
 /**
  * Weekly reach for a gemeente: the buyers ESH counts × the share it promises to
  * reach. This is ESH's own claim (bron: eshmedia.nl), so it is the one number we

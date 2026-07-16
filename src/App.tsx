@@ -449,7 +449,7 @@ export default function App() {
                         </strong>.
                       </span>
                     ) : (
-                      <span>Maak een mix van abri's en digitale schermen voor jouw campagne.</span>
+                      <span>Combineer A0-displays en driehoeksborden voor jouw campagne.</span>
                     )}
                   </p>
                 </div>

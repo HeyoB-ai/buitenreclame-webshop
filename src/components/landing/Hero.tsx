@@ -1,4 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react';
+import { GEMEENTEN, MIN_WEEKPRIJS, provincieClaim } from '../../data/gemeenten';
 
 interface HeroProps {
   /** The planner card rendered in the right column of the hero grid. */
@@ -42,10 +43,13 @@ export default function Hero({ children }: HeroProps) {
           <span className="eyebrow"><span className="pulse" /><span className="eyebrow-text">Buitenreclame voor het MKB<span className="eyebrow-region"> · heel Nederland</span></span></span>
           <h1>Zoveel mogelijk mensen.<br /><span className="accent">Voor jouw budget.</span></h1>
           <p className="lede">Nog nooit geadverteerd? Geen reclamebureau? Daar is dit voor gemaakt. Vertel wie je wilt bereiken en wat je kwijt wilt — je ziet meteen hoe ver je komt.</p>
+          {/* Every figure here is read from the data, so the copy cannot outrun
+              the inventory. The price is a guide price: `weeklyPrice` is an
+              estimate in the source data. */}
           <div className="trust">
-            <span><b>3.900</b> schermen &amp; abri's</span><span className="sep">·</span>
-            <span>Vaak live vanaf <b>morgen</b></span><span className="sep">·</span>
-            <span>Al vanaf <b>€250</b></span>
+            <span><b>{GEMEENTEN.length}</b> gemeenten in {provincieClaim()}</span><span className="sep">·</span>
+            <span>Plaatsing op de <b>vaste dag</b> in jouw gemeente</span><span className="sep">·</span>
+            <span>Richtprijs vanaf <b>€{MIN_WEEKPRIJS}</b></span>
           </div>
         </div>
         {children}

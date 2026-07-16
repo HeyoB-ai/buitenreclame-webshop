@@ -35,11 +35,11 @@ export default function InteractiveMap({
         <span className="text-[10px] font-mono tracking-wider uppercase text-slate-400 block mb-1">Legenda</span>
         <div className="flex items-center gap-2 text-xs text-slate-200">
           <div className="w-3.5 h-3.5 rounded-full bg-gradient-to-tr from-cyan-400 to-blue-500 border border-white/20" />
-          <span>Digitaal scherm</span>
+          <span>A0-display</span>
         </div>
         <div className="flex items-center gap-2 text-xs text-slate-200">
           <div className="w-3.5 h-3.5 rounded-full bg-gradient-to-tr from-amber-400 to-orange-500 border border-white/20" />
-          <span>Abri (gedrukt)</span>
+          <span>Driehoeksbord</span>
         </div>
         <div className="flex items-center gap-1 text-[10px] font-medium text-blue-400 bg-blue-950/40 border border-blue-900/50 px-1.5 py-0.5 rounded-md mt-1">
           <Sparkles className="w-3 h-3 text-blue-400 shrink-0" />
