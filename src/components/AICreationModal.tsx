@@ -132,9 +132,11 @@ export default function AICreationModal({
 
     try {
       const jobId = await startCreative(prompt, posterRatio.aspect);
-      setGenerationStep('AI maakt 3 achtergronden (dit duurt ~15-20s)...');
-      const imageUrls = await pollCreative(jobId, () => {
-        setGenerationStep('AI maakt 3 achtergronden (dit duurt ~15-20s)...');
+      // Measured live: ~45-60s for the 3 parallel jobs. Show the seconds ticking
+      // so a slow run reads as "busy" rather than "stuck".
+      setGenerationStep('AI maakt 3 achtergronden (dit duurt ~45-60s)...');
+      const imageUrls = await pollCreative(jobId, (elapsed) => {
+        setGenerationStep(`AI maakt 3 achtergronden... ${elapsed}s (meestal ~45-60s)`);
       });
       setGeneratedImages(imageUrls);
       setSelectedImage(imageUrls[0] ?? null);
