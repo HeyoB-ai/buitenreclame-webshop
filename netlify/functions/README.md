@@ -35,9 +35,10 @@ Uses the **official** Higgsfield API (docs.higgsfield.ai/docs/how-to/introductio
   `200` + a real image URL).
 - Auth header: `Authorization: Key ${HF_API_KEY}:${HF_API_SECRET}`.
 - `generate-creative` → **3 parallel** `POST /{model_id}` jobs with a **flat**
-  body `{ prompt, aspect_ratio, resolution, negative_prompt }`. The `aspect_ratio`
-  matches the chosen screen: **`9:16`** for a digital screen (1080×1920), **`2:3`**
-  for an abri (118.5×175 cm) — so the poster is never stretched. Returns a `live.`
+  body `{ prompt, aspect_ratio, resolution, negative_prompt }`. ESH prints one
+  format — **A0** (841×1189 mm) — for both the A0-display and the Driehoeksbord,
+  so the `aspect_ratio` is always **`3:4`**, the nearest supported ratio to A0
+  (see *Measured limits*). Returns a `live.`
   jobId carrying the 3 `request_id`s; the client renders 3 textless variants to
   choose from and overlays the sharp text/logo itself (step B).
 - `creative-status` → `GET /requests/{request_id}/status`; when `completed` it
@@ -47,6 +48,31 @@ Uses the **official** Higgsfield API (docs.higgsfield.ai/docs/how-to/introductio
 - **Errors** (auth, credits, validation, NSFW, network) become a short, friendly
   `{ status: "failed", error }` — never a stacktrace or a key. Set **`HF_DEBUG=1`**
   to log the full HTTP status + body **server-side** (terminal only); off by default.
+
+### Measured limits (verified live, 2026-07)
+
+These are the numbers the timeouts are built on — measure again before changing them.
+
+| Fact | Measured value |
+| --- | --- |
+| Accepted `aspect_ratio` | `9:16`, `16:9`, `4:3`, `3:4`, `1:1`, `2:3`, `3:2` — **verbatim from the API's own 422**. A raw ratio (`841:1189`, `1:1.414`) is a `422`. |
+| Our A0 ratio | `3:4` (1.333) is the **nearest** supported ratio to A0 (1.414); `2:3` (1.5) is further. Verified `200` + a real image URL. |
+| Time to a finished image | **~45-60s** for the 3 parallel jobs on an idle account. |
+| **Concurrency cap** | **4 in-flight requests per account** — `400 {"detail":"Maximum number of concurrent requests (4) has been reached"}`. |
+
+**The concurrency cap is the trap.** One click starts **3** jobs, so a second
+click while the first is still running exceeds 4 and is refused — and jobs that
+queue behind the budget can sit in `queued` for **minutes** (measured >180s).
+Abandoned jobs are never cancelled, so they keep occupying the budget until they
+finish. If generation feels "stuck", this is the first thing to check.
+
+### Why everything has a timeout
+
+`fetch` without a signal can stay pending forever. Both functions bound every
+outbound call (`AbortSignal.timeout`), and `creativeClient.ts` bounds every
+request *and* the whole poll (180s). Without the per-request bound the poll
+deadline can never fire — it is only consulted between requests — which strands
+the UI on a spinner with no result and no error.
 
 ### Switching model — `HF_IMAGE_MODEL` is the only knob
 

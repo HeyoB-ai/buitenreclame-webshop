@@ -13,7 +13,7 @@ export default function Testimonial() {
         <div>
           <span className="eyebrow warm"><span className="pulse" />Van een ondernemer zoals jij</span>
           <blockquote>
-            <span className="mark">"</span>Ik dacht dat adverteren op straat alleen iets was voor de grote ketens. Ik ben klein begonnen met twee schermen bij mij in de buurt. Binnen een week liepen er mensen binnen die 'dat bord' hadden gezien.<span className="mark">"</span>
+            <span className="mark">"</span>Ik dacht dat adverteren op straat alleen iets was voor de grote ketens. Ik ben klein begonnen met één gemeente bij mij in de buurt. Binnen een week liepen er mensen binnen die 'dat bord' hadden gezien.<span className="mark">"</span>
           </blockquote>
           <div className="who"><span className="dot" /><span><b>Sanne</b> — bakkerij, Utrecht</span></div>
         </div>

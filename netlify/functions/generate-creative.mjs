@@ -12,10 +12,16 @@
 import { isLive, startLiveGeneration } from './lib/higgsfield.mjs';
 
 const VARIANTS = 3;
-// Portrait ratios per screen type: 9:16 (digital 1080x1920) or 2:3 (abri
-// 118.5x175cm). The client sends the ratio that matches the chosen screen.
+// ESH prints one format: A0 (841x1189 mm), portrait, for both the A0-display and
+// the Driehoeksbord. A0 is 1:1.414 and 3:4 (1:1.333) is the nearest ratio the
+// model supports — nearer than 2:3 (1:1.5). The other ratios stay allowed so an
+// older client can't 400 on us.
+//
+// Verified live: the API rejects anything outside '9:16', '16:9', '4:3', '3:4',
+// '1:1', '2:3', '3:2' with a 422 (a raw ratio like '841:1189' is NOT accepted),
+// so this portrait-only subset is deliberately narrower than what Soul allows.
 const ALLOWED_RATIOS = new Set(['9:16', '2:3', '3:4']);
-const DEFAULT_RATIO = '9:16';
+const DEFAULT_RATIO = '3:4';
 
 // Per-variant hints so the 3 results genuinely differ — each is a distinct
 // light / angle / moment of the SAME lively scene (never emptying it out).

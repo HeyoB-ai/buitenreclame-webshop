@@ -13,7 +13,7 @@ import { Location } from '../types';
 import PosterComposer from './PosterComposer';
 import {
   composeToDataUrl,
-  ratioForType,
+  posterRatio,
   type PosterFields,
   type TemplateKey,
   type ThemeKey,
@@ -40,7 +40,7 @@ export default function PosterEditor({ location, payload, onApply, onClose }: Pr
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const ratio = ratioForType(location.type);
+  const ratio = posterRatio();
 
   const handleApply = async () => {
     setIsSaving(true);

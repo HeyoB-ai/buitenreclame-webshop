@@ -36,6 +36,17 @@ const DEFAULT_RESOLUTION = '1080p';
 const DEFAULT_ASPECT = '3:4';
 const DEFAULT_BASE_URL = 'https://platform.higgsfield.ai';
 
+// Every outbound fetch is bounded. Without this a stalled connection to
+// Higgsfield hangs the function, which hangs the client's poll, which strands
+// the UI on its spinner forever — no error, no result.
+const START_TIMEOUT_MS = 20_000;
+const STATUS_TIMEOUT_MS = 10_000;
+
+// Verified live against the API (a 422 lists the accepted set verbatim):
+//   '9:16', '16:9', '4:3', '3:4', '1:1', '2:3', '3:2'
+// Anything else — including a raw A0 ratio like '841:1189' — is a 422.
+export const SUPPORTED_ASPECT_RATIOS = ['9:16', '16:9', '4:3', '3:4', '1:1', '2:3', '3:2'];
+
 /** Current mode: "mock" (default) or "live". Trimmed + lowercased so a stray
  *  space/newline in the env var (common when pasting into a dashboard) can't
  *  silently keep us on mock. */
@@ -73,12 +84,33 @@ function authHeaders(withJson = false) {
 }
 
 // Map an HTTP failure to a short, safe message — never a stacktrace or a key.
-function httpFriendly(status) {
+// `detail` is the upstream body; it carries the only reason that is actually
+// actionable in several cases, so we read it rather than guess from the status.
+function httpFriendly(status, detail = '') {
+  // The account allows a limited number of in-flight generations (4 on our
+  // plan). Each click starts 3, so a second attempt while the first is still
+  // running trips this. It is a 400, but "ongeldige invoer" would be a lie.
+  if (/concurrent requests/i.test(detail)) {
+    return 'De AI-ontwerper verwerkt al het maximale aantal aanvragen tegelijk. Wacht tot de vorige klaar is en probeer opnieuw.';
+  }
   if (status === 401) return 'Higgsfield-authenticatie mislukt. Controleer de sleutels.';
   if (status === 403) return 'Onvoldoende Higgsfield-credits om te genereren.';
   if (status === 404) return 'Het gekozen AI-model is niet beschikbaar.';
+  if (status === 429) return 'Te veel aanvragen achter elkaar. Wacht even en probeer opnieuw.';
   if (status === 400 || status === 422) return 'De aanvraag werd geweigerd (ongeldige invoer).';
   return 'Kon de AI-generatie niet uitvoeren. Probeer het later opnieuw.';
+}
+
+/** Pull the human-readable reason out of an upstream error body, if any. */
+function upstreamDetail(text) {
+  try {
+    const d = JSON.parse(text)?.detail;
+    if (typeof d === 'string') return d;
+    if (Array.isArray(d)) return d.map((x) => x?.msg).filter(Boolean).join('; ');
+  } catch {
+    // not JSON — fall through
+  }
+  return '';
 }
 
 /**
@@ -100,16 +132,21 @@ export async function startLiveGeneration(prompt, aspectRatio, negativePrompt) {
       method: 'POST',
       headers: authHeaders(true),
       body: JSON.stringify(body),
+      signal: AbortSignal.timeout(START_TIMEOUT_MS),
     });
   } catch (err) {
-    debug('start network error:', err?.message);
+    debug('start network error:', err?.name, err?.message);
+    if (err?.name === 'TimeoutError' || err?.name === 'AbortError') {
+      throw new Error('De AI-ontwerpserver reageerde niet op tijd. Probeer het opnieuw.');
+    }
     throw new Error('Kon de AI-ontwerpserver niet bereiken.');
   }
 
   const text = await res.text();
   if (!res.ok) {
+    const detail = upstreamDetail(text);
     debug(`start failed: HTTP ${res.status} ${res.statusText} — body: ${text.slice(0, 800)}`);
-    throw new Error(httpFriendly(res.status));
+    throw new Error(httpFriendly(res.status, detail));
   }
 
   let data;
@@ -165,9 +202,12 @@ export async function getLiveStatus(requestId) {
 
   let res;
   try {
-    res = await fetch(url, { headers: authHeaders() });
+    res = await fetch(url, { headers: authHeaders(), signal: AbortSignal.timeout(STATUS_TIMEOUT_MS) });
   } catch {
-    return { status: 'in_progress' }; // network hiccup → keep polling
+    // Network hiccup or a stalled connection → report "still running" and let
+    // the client's own deadline end it. Bounded by STATUS_TIMEOUT_MS, so this
+    // function always answers instead of hanging the caller's request.
+    return { status: 'in_progress' };
   }
 
   if (!res.ok) {

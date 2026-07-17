@@ -59,9 +59,9 @@ export default function LocationDetailModal({
 
             {/* Media badge */}
             <span className={`absolute bottom-4 left-4 text-[10px] font-bold font-mono uppercase tracking-wider px-2.5 py-1 rounded-full shadow ${
-              location.type === 'digital' ? 'bg-cobalt text-white' : 'bg-ink text-white'
+              location.type === 'A0-display' ? 'bg-cobalt text-white' : 'bg-ink text-white'
             }`}>
-              {location.type === 'digital' ? 'Digitaal Scherm' : 'Klassieke Abri (Gedrukt)'}
+              {location.type}
             </span>
           </div>
 
@@ -70,7 +70,7 @@ export default function LocationDetailModal({
             <div className="space-y-1.5">
               <h4 className="text-sm font-bold text-ink flex items-center gap-1.5">
                 <MapPin className="w-4 h-4 text-cobalt" />
-                <span>Waar hangt dit scherm?</span>
+                <span>Waar hangt dit?</span>
               </h4>
               <p className="text-xs text-mist leading-relaxed">
                 In <strong className="text-ink">{location.city}</strong>, bij <strong className="text-ink">{location.street}</strong>.

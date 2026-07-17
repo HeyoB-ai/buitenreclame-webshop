@@ -57,7 +57,7 @@ export default function CartAndCheckout({
   const [phone, setPhone] = useState('');
   const [startDate, setStartDate] = useState('2026-08-03'); // Default to a realistic Monday in the future
 
-  const [orderNumber] = useState(() => 'GBR-' + Math.floor(100000 + Math.random() * 900000));
+  const [orderNumber] = useState(() => 'ESH-' + Math.floor(100000 + Math.random() * 900000));
 
   // Totals calculations
   const totalWeeks = cartItems.reduce((acc, item) => acc + item.weeks, 0);
@@ -108,8 +108,8 @@ export default function CartAndCheckout({
               <span className="text-ink font-bold">{startDate}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-mist font-semibold">Locaties geboekt:</span>
-              <span className="text-ink font-bold">{cartItems.length} formaten gecombineerd</span>
+              <span className="text-mist font-semibold">Gemeenten geboekt:</span>
+              <span className="text-ink font-bold">{cartItems.length}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-mist font-semibold">Campagnetotaal:</span>
@@ -119,7 +119,7 @@ export default function CartAndCheckout({
 
           <div className="bg-cobalt-soft border border-cobalt-soft p-3 rounded-card-sm flex items-start gap-2 text-[11px] text-cobalt leading-normal font-medium">
             <Sparkles className="w-4 h-4 shrink-0" />
-            <span>Onze AI-modellen hebben je geüploade/ontworpen creaties voorbereid voor de specifieke resoluties van elke locatie.</span>
+            <span>Je geüploade/ontworpen uitingen staan klaar op A0-formaat (841 × 1189 mm), met de veilige zone vrijgehouden voor het frame.</span>
           </div>
         </div>
 
@@ -221,7 +221,7 @@ export default function CartAndCheckout({
 
           {cartItems.length > 0 && (
             <p className="text-[11px] text-mist-2 bg-paper-2 border border-line rounded-card-sm px-3 py-2 leading-relaxed">
-              Je gemaakte uitingen blijven bewaard zolang deze sessie open is, en je kunt ze op meerdere schermen hergebruiken. Echt opslaan over sessies (met een account) komt later.
+              Je gemaakte uitingen blijven bewaard zolang deze sessie open is, en je kunt ze in meerdere gemeenten hergebruiken. Echt opslaan over sessies (met een account) komt later.
             </p>
           )}
 
@@ -230,7 +230,7 @@ export default function CartAndCheckout({
               <ShoppingBag className="w-12 h-12 text-mist-2 mx-auto" />
               <div className="space-y-1">
                 <p className="text-sm font-semibold text-ink">Winkelmand is nog leeg</p>
-                <p className="text-xs text-mist">Voeg een abri of digitaal scherm toe uit onze aanbevelingen om te starten.</p>
+                <p className="text-xs text-mist">Voeg een gemeente toe uit je plan om te starten.</p>
               </div>
               <button
                 onClick={onBackToLocations}
@@ -250,9 +250,9 @@ export default function CartAndCheckout({
                   <div className="flex justify-between items-start gap-4">
                     <div>
                       <span className={`text-[9px] font-bold font-mono uppercase tracking-wider px-2 py-0.5 rounded-full ${
-                        item.location.type === 'digital' ? 'bg-cobalt text-white' : 'bg-ink text-white'
+                        item.location.type === 'A0-display' ? 'bg-cobalt text-white' : 'bg-ink text-white'
                       }`}>
-                        {item.location.type === 'digital' ? 'Digitaal Scherm' : 'Klassieke Abri'}
+                        {item.location.type}
                       </span>
                       <h4 className="text-sm font-bold text-ink leading-tight mt-1.5">
                         {item.location.street}, {item.location.city}
@@ -316,11 +316,11 @@ export default function CartAndCheckout({
                       {item.creative?.previewUrl && cartItems.length > 1 && (
                         <button
                           onClick={() => onApplyToAll(item.creative, item.location.type)}
-                          title="Deze uiting op alle schermen in je campagne toepassen (aangepast per formaat)"
+                          title="Deze uiting op je hele campagne toepassen"
                           className="px-3 py-1.5 rounded-full font-bold text-[11px] cursor-pointer transition-all bg-white hover:bg-paper-2 text-mist border border-line shadow-soft flex items-center gap-1"
                         >
                           <Copy className="w-3 h-3 shrink-0" />
-                          <span>Op alle schermen</span>
+                          <span>Op hele campagne</span>
                         </button>
                       )}
                       <button

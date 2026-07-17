@@ -1,40 +1,35 @@
 import { AnimatePresence, motion } from 'motion/react';
 import { ArrowRight, ArrowUp, Check, TriangleAlert } from 'lucide-react';
-import { AUDIENCES, PROVINCES, CITIES, type Audience } from '../../data/screens';
+import { PRODUCTEN, PROVINCES, GEMEENTE_NAMEN, type Product } from '../../data/gemeenten';
 import type { PlanResult } from '../../lib/campaignEngine';
 import { useCountUp, fmt, euro } from './useCountUp';
 
 interface PlannerProps {
-  aud: Audience;
+  product: Product;
   region: string;
   budget: number;
   weeks: number;
   plan: PlanResult;
-  setAud: (a: Audience) => void;
+  setProduct: (p: Product) => void;
   setRegion: (r: string) => void;
   setBudget: (b: number) => void;
   setWeeks: (w: number) => void;
-  onViewScreens: () => void;
+  onViewGemeenten: () => void;
 }
 
 const BUDGET_MIN = 250;
 const BUDGET_MAX = 12000;
 
 export default function Planner({
-  aud, region, budget, weeks, plan,
-  setAud, setRegion, setBudget, setWeeks, onViewScreens,
+  product, region, budget, weeks, plan,
+  setProduct, setRegion, setBudget, setWeeks, onViewGemeenten,
 }: PlannerProps) {
-  const reach = useCountUp(plan.net);
-
-  // Region options come straight from the real dataset.
-  const regionOptions = { provs: PROVINCES, cities: CITIES };
+  const reach = useCountUp(plan.reach);
 
   const fill = ((budget - BUDGET_MIN) / (BUDGET_MAX - BUDGET_MIN)) * 100;
-  const regionLabel = region === 'NL' ? 'heel Nederland' : region.replace(/^(prov|city):/, '');
+  const regionLabel = region === 'NL' ? 'heel Nederland' : region.replace(/^(prov|gem):/, '');
   const weekWord = weeks === 1 ? 'week' : 'weken';
-
-  const removed = plan.raw - plan.net;
-  const pctRemoved = plan.raw ? Math.round((removed / plan.raw) * 100) : 0;
+  const count = plan.selected.length;
 
   const bestNudge =
     plan.nudges.find((n) => n.cost <= Math.max(400, budget * 0.6)) ?? plan.nudges[0];
@@ -42,17 +37,17 @@ export default function Planner({
 
   return (
     <div className="planner">
-      {/* 1 — audience */}
+      {/* 1 — product */}
       <div className="field">
-        <div className="plabel"><span className="step">1</span> Wie wil je bereiken?</div>
+        <div className="plabel"><span className="step">1</span> Wat wil je ophangen?</div>
         <div className="chips">
-          {AUDIENCES.map((a) => (
+          {PRODUCTEN.map((p) => (
             <button
-              key={a}
-              className={`chip${a === aud ? ' on' : ''}`}
-              onClick={() => setAud(a)}
+              key={p}
+              className={`chip${p === product ? ' on' : ''}`}
+              onClick={() => setProduct(p)}
             >
-              {a}
+              {p}
             </button>
           ))}
         </div>
@@ -65,13 +60,13 @@ export default function Planner({
           <select value={region} onChange={(e) => setRegion(e.target.value)}>
             <option value="NL">Heel Nederland</option>
             <optgroup label="Provincie">
-              {regionOptions.provs.map((p) => (
+              {PROVINCES.map((p) => (
                 <option key={p} value={`prov:${p}`}>{p}</option>
               ))}
             </optgroup>
-            <optgroup label="Stad">
-              {regionOptions.cities.map((c) => (
-                <option key={c} value={`city:${c}`}>{c}</option>
+            <optgroup label="Gemeente">
+              {GEMEENTE_NAMEN.map((g) => (
+                <option key={g} value={`gem:${g}`}>{g}</option>
               ))}
             </optgroup>
           </select>
@@ -106,20 +101,15 @@ export default function Planner({
         <div className="rlabel">Geschat bereik</div>
         <div className="reachnum"><span className="approx">≈</span>{fmt(reach)}</div>
         <div className="reachsub">
-          unieke mensen in <b>{regionLabel}</b> · <b>{plan.selected.length}</b> schermen · <b>{weeks}</b> {weekWord}
+          mensen in <b>{regionLabel}</b> · <b>{count}</b> {count === 1 ? 'gemeente' : 'gemeenten'} · <b>{weeks}</b> {weekWord}
         </div>
 
         <div className="valuetag">
           <Check className="ic" size={16} strokeWidth={2.4} />
           <div>
-            {plan.selected.length > 1 && removed > 0 ? (
-              <span>
-                Dubbeltellers eruit: <b>{fmt(plan.raw)}</b> bruto contacten werden <b>{fmt(plan.net)}</b> échte mensen{' '}
-                <span className="dim">({pctRemoved}% overlap weggerekend)</span>
-              </span>
-            ) : (
-              <span>Dit zijn <b>unieke</b> mensen — geen opgeblazen impressiecijfers.</span>
-            )}
+            <span>
+              ESH rekent met <b>65%</b> van de potentiële kopers in een gemeente. Elke gemeente telt apart — <b>geen dubbeltellers</b>.
+            </span>
           </div>
         </div>
 
@@ -135,7 +125,7 @@ export default function Planner({
             >
               <span className="up"><ArrowUp size={16} strokeWidth={2.6} /></span>
               <div className="ntext">
-                <span className="plus">+{fmt(bestNudge.marginal)}</span> bereik voor <b>{euro(bestNudge.cost)}</b> extra — pakt <b>{bestNudge.s.area}, {bestNudge.s.city}</b> erbij.
+                <span className="plus">+{fmt(bestNudge.marginal)}</span> bereik voor <b>{euro(bestNudge.cost)}</b> extra — pakt <b>{bestNudge.g.name}</b> erbij.
               </div>
               <button
                 className="nadd"
@@ -148,9 +138,9 @@ export default function Planner({
         </AnimatePresence>
 
         <AnimatePresence initial={false}>
-          {plan.floor?.type === 'empty' && (
+          {plan.hint?.type === 'budget-te-laag' && (
             <motion.div
-              key="floor-empty"
+              key="hint-budget"
               className="floor"
               initial={{ opacity: 0, y: -4 }}
               animate={{ opacity: 1, y: 0 }}
@@ -159,17 +149,17 @@ export default function Planner({
             >
               <TriangleAlert className="ic" size={15} strokeWidth={2.2} />
               <div>
-                Met dit budget past nog geen volledige week op één scherm.{' '}
-                <span className="fix" onClick={() => setBudget(plan.floor!.type === 'empty' ? plan.floor!.minCost : budget)}>
-                  Zet op {euro(plan.floor.minCost)}
+                Met dit budget past nog geen enkele gemeente voor {weeks} {weekWord}.{' '}
+                <span className="fix" onClick={() => setBudget(plan.hint!.type === 'budget-te-laag' ? plan.hint!.minCost : budget)}>
+                  Zet op {euro(plan.hint.minCost)}
                 </span>{' '}
-                — dan draait je eerste scherm.
+                — dan draait je eerste gemeente.
               </div>
             </motion.div>
           )}
-          {plan.floor?.type === 'weeks' && (
+          {plan.hint?.type === 'te-veel-weken' && (
             <motion.div
-              key="floor-weeks"
+              key="hint-weken"
               className="floor"
               initial={{ opacity: 0, y: -4 }}
               animate={{ opacity: 1, y: 0 }}
@@ -178,15 +168,17 @@ export default function Planner({
             >
               <TriangleAlert className="ic" size={15} strokeWidth={2.2} />
               <div>
-                Je campagne draait maar <b>7 dagen</b>. De meeste mensen zien 'm dan te weinig om 'm te onthouden — <b>zonde van je bereik</b>.{' '}
-                <span className="fix" onClick={() => setWeeks(2)}>Maak er 2 weken van</span> voor hetzelfde bereik, veel effectiever.
+                ESH adviseert maximaal <b>{plan.hint.adviesMax} weken</b> — daarna zien grotendeels dezelfde mensen je poster nog eens.{' '}
+                <span className="fix" onClick={() => setWeeks(plan.hint!.type === 'te-veel-weken' ? plan.hint!.adviesMax : weeks)}>
+                  Zet dat budget liever in extra gemeenten
+                </span>.
               </div>
             </motion.div>
           )}
         </AnimatePresence>
 
-        <button className="cta" onClick={onViewScreens}>
-          <span>{plan.selected.length ? `Bekijk mijn ${plan.selected.length} schermen` : 'Kies een startbudget'}</span>
+        <button className="cta" onClick={onViewGemeenten}>
+          <span>{count ? `Bekijk mijn ${count} ${count === 1 ? 'gemeente' : 'gemeenten'}` : 'Kies een startbudget'}</span>
           <ArrowRight className="arr" size={18} strokeWidth={2.6} />
         </button>
         <div className="reassure">Geen account nodig · geen verplichting · je ziet eerst alles</div>

@@ -1,4 +1,4 @@
-# Global — Buitenreclame
+# ESH Media — Buitenreclame
 
 Zelfbedieningsplatform voor buitenreclame voor het MKB. Een ondernemer vertelt
 wie hij wil bereiken en wat hij kwijt wil, en ziet meteen hoe ver zijn budget
@@ -22,19 +22,20 @@ npm run lint      # tsc --noEmit
 De landing is één doorlopende pagina; de gebruiker begint bovenin bij de planner
 en boekt onderaan.
 
-1. **Planner (hero).** Kies een doelgroep, een regio en een budget + looptijd.
-   Terwijl je schuift zie je live het **unieke bereik**, plus zachte duwtjes:
-   - een *dubbeltellers*-regel die laat zien hoeveel bruto contacten na
-     overlap-correctie overblijven;
+1. **Planner (hero).** Kies een product (A0-display of driehoeksbord), een regio
+   en een budget + looptijd. Terwijl je schuift zie je live het **bereik**, plus
+   zachte duwtjes:
    - een *nudge* ("+X bereik voor €Y extra") met een werkende **Voeg toe**-knop;
-   - *vloer*-waarschuwingen bij een te laag budget of een looptijd van 1 week,
+   - een hint als het budget te laag is, of als je langer dan 3 weken draait —
      met fix-links die het budget of de weken direct goedzetten.
-2. **Schermen (resultaten).** De goedkoopste bundel die het bereik maximaliseert,
-   als kaartjes met stad, wijk en doelgroep-match. Per kaart een **Voeg toe aan
-   campagne**-knop; erboven **Boek dit hele plan**.
-3. **Mand & checkout.** De geselecteerde schermen komen in de bestaande mand,
-   waar je per scherm campagnemateriaal koppelt (uploaden, door AI laten
-   ontwerpen, of laten checken) en de campagne aanvraagt.
+2. **Gemeenten (resultaten).** De goedkoopste bundel die het bereik maximaliseert,
+   als kaartjes met provincie, bereik, richtprijs en beschikbaarheid ("nog X van
+   Y displays vrij vanaf {plaatsingsdag}", gelabeld als indicatief). Per kaart een
+   **Voeg toe aan campagne**-knop; erboven **Boek dit hele plan**. Uitverkochte
+   gemeenten worden apart genoemd, nooit gepland.
+3. **Mand & checkout.** De geselecteerde gemeenten komen in de bestaande mand,
+   waar je campagnemateriaal koppelt (uploaden, door AI laten ontwerpen, of laten
+   checken) en de campagne aanvraagt.
 
 De secties *Voor jou*, *Zo werkt het*, *Uitleg*, *Testimonial* en *FAQ* leggen in
 gewone taal uit wat je koopt.
@@ -46,42 +47,47 @@ gewone taal uit wat je koopt.
 Pure functies, geen DOM, geen React. De planner en de resultatenlijst rekenen
 allemaal via `planCampaign(...)` — er zit geen rekenlogica in de componenten.
 
-`planCampaign({ region, aud, budget, weeks })` sorteert alle schermen in de regio
-op **relevant bereik per euro**, vult greedy de goedkoopste bundel binnen het
-budget, en berekent het unieke bereik. Het geeft ook upsell-*nudges* en, als het
-plan te dun is, een *floor*-hint terug.
+`planCampaign({ product, region, budget, weeks })` sorteert alle gemeenten in de
+regio op **bereik per euro**, vult greedy de goedkoopste bundel binnen het
+budget, en telt het bereik op. Het geeft ook upsell-*nudges* en, als het plan
+onkoopbaar is of te lang draait, een *hint* terug.
 
-Twee constanten sturen het model:
+De rekeneenheid is de **gemeente**, en daar volgt de rest uit:
 
-- **`CITY_DECAY` (0.72)** — schermen in dezelfde stad zien grotendeels dezelfde
-  mensen. Binnen een stad telt het sterkste scherm volledig mee; elk volgend
-  scherm telt `0.72^rang` (dus met korting). Zo blijft het gerapporteerde bereik
-  *uniek* in plaats van opgeblazen.
-- **`OFFTARGET` (0.35)** — het deel van het bereik van een scherm dat nog meetelt
-  als dat scherm níét bij de gekozen doelgroep past. Een perfecte match telt voor
-  1.0, een mismatch voor 0.35.
+- **Bereik = `potentieleKopers × coverage`** (0.65) — de belofte van ESH zelf
+  (bron: eshmedia.nl). Geen doelgroepweging: we modelleren ESH's cijfer niet na.
+- **Geen overlap-correctie.** Gemeenten zijn disjuncte gebieden — de mensen in
+  Aalsmeer zijn niet de mensen in Alkmaar — dus bereik telt gewoon op. De oude
+  `CITY_DECAY`/`OFFTARGET` sloegen op schermen in dezelfde stad en zijn met de
+  NS-data vervallen.
+- **Uitverkocht** (`displaysVrij === 0`) wordt overgeslagen en apart getoond.
+- **Zacht plafond op 3 weken** (`ADVIES_MAX_WEKEN`, ESH's eigen advies) met een
+  fix-link die het budget naar extra gemeenten stuurt.
 
-`matchFactor`, `inRegion` en `uniqueReach` zijn losse, testbare hulpfuncties.
-`src/lib/campaignEngine.test.md` documenteert een handmatige verificatie (via
-`tsx`) tegen de goedgekeurde ontwerp-demo — de cijfers komen exact overeen.
+`inRegion` en `totalReach` zijn losse, testbare hulpfuncties.
 
 ---
 
-## Data (`src/data/screens.ts`)
+## Data (`src/data/gemeenten.ts`)
 
-`screens.ts` bevat **synthetische** scherm-inventaris: `genScreens()` genereert
-deterministisch (mulberry32, seed `20260710`) een set schermen met dezelfde vorm
-als de echte inventaris — `id`, `name`, `city`, `area`, `province`, `type`
-(`abri` | `digital`), `weeklyReach`, `weeklyPrice`, `audiences`, `lat`, `lng`.
+Bron is `gemeenten.esh.json`: **35 gemeenten in alle 12 provincies**, met per
+gemeente `potentieleKopers`, `coverage`, `displays`, `displaysVrij`, `serie`,
+`weeklyPrice`, `plaatsingsdag` (maandag/dinsdag), `minWeken`, `adviesMaxWeken`,
+`producten` (`A0-display` | `Driehoeksbord`), `lat`, `lng` en `bron`.
 
-Deze data wordt t.z.t. vervangen door de echte **~3.900-locatie-inventaris** in
-**exact dezelfde vorm**; alleen `SCREENS` hoeft dan te wijzen naar de echte bron
-(bijv. een database of ERP zoals Broadsign/Ayuda). De engine en de UI blijven
-ongewijzigd.
+**Let op `bron`.** Dat veld zegt per waarde waar 'ie vandaan komt:
+`potentieleKopers` en `coverage` komen van eshmedia.nl, maar `displays`,
+`displaysVrij` en `weeklyPrice` staan als **"schatting"** gemarkeerd. Die drie
+mogen daarom nergens als harde belofte in de UI staan — ze zijn overal gelabeld
+als indicatief, en prijzen heten *richtprijzen*. Claims in de copy worden
+afgeleid uit de data (`GEMEENTEN.length`, `provincieClaim()`, `MIN_WEEKPRIJS`)
+zodat de tekst niet kan gaan liegen als de inventaris verandert.
 
-`src/lib/adapters.ts` (`screenToLocation`) vertaalt een engine-`Screen` naar het
-bestaande `Location`-type, zodat een gepland scherm in de bestaande mand,
-detail-modal en materiaal-flow past.
+`src/lib/adapters.ts` (`gemeenteToLocation`) vertaalt een `Gemeente` + `Product`
+naar het bestaande `Location`-type, zodat een geplande gemeente in de bestaande
+mand, detail-modal en materiaal-flow past. `src/data/catalogue.ts` bouwt de
+browse-catalogus uit diezelfde bron, zodat planner en catalogus elkaar niet
+kunnen tegenspreken.
 
 ---
 
@@ -91,7 +97,7 @@ De designtokens (kleuren, radii, schaduwen, fonts) staan in `src/index.css`
 (`@theme`), 1-op-1 overgenomen uit `design/reference.html` — de goedgekeurde
 visuele bron van waarheid. Licht *paper*-palet, **cobalt** als actiekleur en
 **amber** uitsluitend voor bereik-/prijsgetallen. De landing-styling staat
-gescoped in `src/components/landing/landing.css` (onder `.gws-landing`) zodat die
+gescoped in `src/components/landing/landing.css` (onder `.esh-landing`) zodat die
 niet lekt naar de rest van de app.
 
 Media (hero-video, foto's) staan in `public/assets/`.

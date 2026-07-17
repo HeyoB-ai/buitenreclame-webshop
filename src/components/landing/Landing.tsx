@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { ShoppingBag } from 'lucide-react';
 import Logo from '../Logo';
-import { type Audience, type Screen } from '../../data/screens';
+import { type Product, type Gemeente } from '../../data/gemeenten';
 import { planCampaign } from '../../lib/campaignEngine';
 import Hero from './Hero';
 import Planner from './Planner';
@@ -19,22 +19,22 @@ interface LandingProps {
   cartCount: number;
   addedIds?: string[];
   onOpenCart: () => void;
-  onAddScreen: (screen: Screen, weeks: number) => void;
-  onBookPlan: (screens: Screen[], weeks: number) => void;
-  onOpenScreenDetail: (screen: Screen) => void;
+  onAddGemeente: (gemeente: Gemeente, product: Product, weeks: number) => void;
+  onBookPlan: (gemeenten: Gemeente[], product: Product, weeks: number) => void;
+  onOpenGemeenteDetail: (gemeente: Gemeente, product: Product) => void;
 }
 
 export default function Landing({
-  cartCount, addedIds, onOpenCart, onAddScreen, onBookPlan, onOpenScreenDetail,
+  cartCount, addedIds, onOpenCart, onAddGemeente, onBookPlan, onOpenGemeenteDetail,
 }: LandingProps) {
-  const [aud, setAud] = useState<Audience>('Studenten');
+  const [product, setProduct] = useState<Product>('A0-display');
   const [region, setRegion] = useState<string>('NL');
   const [budget, setBudget] = useState<number>(2000);
   const [weeks, setWeeks] = useState<number>(2);
 
   const plan = useMemo(
-    () => planCampaign({ region, aud, budget, weeks }),
-    [region, aud, budget, weeks],
+    () => planCampaign({ region, product, budget, weeks }),
+    [region, product, budget, weeks],
   );
 
   const scrollToResults = () => {
@@ -42,7 +42,7 @@ export default function Landing({
   };
 
   return (
-    <div className="gws-landing">
+    <div className="esh-landing">
       {/* topbar */}
       <div className="topbar">
         <div className="in">
@@ -64,16 +64,16 @@ export default function Landing({
 
       <Hero>
         <Planner
-          aud={aud}
+          product={product}
           region={region}
           budget={budget}
           weeks={weeks}
           plan={plan}
-          setAud={setAud}
+          setProduct={setProduct}
           setRegion={setRegion}
           setBudget={setBudget}
           setWeeks={setWeeks}
-          onViewScreens={scrollToResults}
+          onViewGemeenten={scrollToResults}
         />
       </Hero>
 
@@ -83,13 +83,13 @@ export default function Landing({
 
       <PlanResults
         plan={plan}
-        aud={aud}
+        product={product}
         region={region}
         weeks={weeks}
         addedIds={addedIds}
-        onAddScreen={(screen) => onAddScreen(screen, weeks)}
-        onBookPlan={() => onBookPlan(plan.selected, weeks)}
-        onOpenScreenDetail={onOpenScreenDetail}
+        onAddGemeente={(gemeente) => onAddGemeente(gemeente, product, weeks)}
+        onBookPlan={() => onBookPlan(plan.selected, product, weeks)}
+        onOpenGemeenteDetail={(gemeente) => onOpenGemeenteDetail(gemeente, product)}
       />
 
       <CinemaStrip />
@@ -98,8 +98,11 @@ export default function Landing({
       <FinalCta />
 
       <div className="footer wrap">
-        <span>© Global Buitenreclame — conceptdemo. Foto's: Higgsfield. Testimonial ter illustratie.</span>
-        <span>Bereik = unieke mensen, overlap eruit gerekend · prijzen per week</span>
+        <span>© ESH Media — conceptdemo. Foto's: Higgsfield. Testimonial ter illustratie.</span>
+        <address className="footer-contact">
+          Kromwijk 4a · 3442 AG Woerden · <a href="tel:+31348689362">0348 689 362</a> · <a href="mailto:info@eshmedia.nl">info@eshmedia.nl</a>
+        </address>
+        <span>Bereik = 65% van de potentiële kopers per gemeente · richtprijzen per week</span>
       </div>
     </div>
   );
