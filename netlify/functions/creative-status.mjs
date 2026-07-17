@@ -97,7 +97,9 @@ export default async (req) => {
     return Response.json({ status: 'in_progress' });
   }
 
-  const n = Math.max(1, Math.min(3, Number(meta.n) || 3));
+  // Mirrors MAX_VARIANTS in generate-creative; the count itself rides in the
+  // jobId, so mock follows whatever HF_VARIANTS was set to.
+  const n = Math.max(1, Math.min(4, Number(meta.n) || 2));
   const imageUrls = Array.from({ length: n }, (_, i) => mockImageUrl(i));
 
   return Response.json({ status: 'completed', imageUrls });

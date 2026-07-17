@@ -99,8 +99,15 @@ async function postJson(url: string, body: unknown, timeoutMs: number): Promise<
   return data;
 }
 
-/** Start a creative job; returns the jobId to poll. */
-export async function startCreative(prompt: string, aspectRatio: string): Promise<string> {
+export interface StartedCreative {
+  jobId: string;
+  /** How many backgrounds actually started. 0 when the server didn't say — the
+   *  count is the server's to decide (HF_VARIANTS), so we never assume one. */
+  variants: number;
+}
+
+/** Start a creative job; returns the jobId to poll and how many variants ran. */
+export async function startCreative(prompt: string, aspectRatio: string): Promise<StartedCreative> {
   const data = await postJson(GENERATE_URL, { prompt, aspectRatio }, START_REQUEST_TIMEOUT_MS);
   // The server reports a refused start as a body-level failure; surface its
   // reason instead of falling through to a generic "no jobId".
@@ -108,7 +115,8 @@ export async function startCreative(prompt: string, aspectRatio: string): Promis
     throw new Error(data?.error || 'De creatie kon niet worden gestart.');
   }
   if (!data?.jobId) throw new Error('Geen jobId ontvangen van de server.');
-  return data.jobId as string;
+  const variants = Number.isInteger(data?.variants) && data.variants > 0 ? (data.variants as number) : 0;
+  return { jobId: data.jobId as string, variants };
 }
 
 /**

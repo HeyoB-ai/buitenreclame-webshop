@@ -131,12 +131,15 @@ export default function AICreationModal({
     setGenerationStep('Aanvraag versturen naar de ontwerp-server...');
 
     try {
-      const jobId = await startCreative(prompt, posterRatio.aspect);
-      // Measured live: ~45-60s for the 3 parallel jobs. Show the seconds ticking
-      // so a slow run reads as "busy" rather than "stuck".
-      setGenerationStep('AI maakt 3 achtergronden (dit duurt ~45-60s)...');
+      // How many backgrounds run is the server's call (HF_VARIANTS), so take the
+      // number from its answer rather than hard-coding one here.
+      const { jobId, variants } = await startCreative(prompt, posterRatio.aspect);
+      const what = variants > 0 ? `${variants} achtergronden` : 'je achtergronden';
+      // Measured live: ~45-60s. Show the seconds ticking so a slow run reads as
+      // "busy" rather than "stuck".
+      setGenerationStep(`AI maakt ${what} (dit duurt ~45-60s)...`);
       const imageUrls = await pollCreative(jobId, (elapsed) => {
-        setGenerationStep(`AI maakt 3 achtergronden... ${elapsed}s (meestal ~45-60s)`);
+        setGenerationStep(`AI maakt ${what}... ${elapsed}s (meestal ~45-60s)`);
       });
       setGeneratedImages(imageUrls);
       setSelectedImage(imageUrls[0] ?? null);
@@ -401,7 +404,7 @@ export default function AICreationModal({
             <div className="space-y-5">
               <form onSubmit={handleGenerate} className="space-y-3">
                 <label className="block text-xs font-semibold text-mist">
-                  Beschrijf je product of aanbieding — de AI maakt 3 fotorealistische achtergronden zonder tekst:
+                  Beschrijf je product of aanbieding — de AI maakt fotorealistische achtergronden zonder tekst:
                 </label>
                 <div className="flex gap-2">
                   <input
@@ -426,7 +429,9 @@ export default function AICreationModal({
                   </button>
                 </div>
                 <div className="flex items-center justify-between gap-2">
-                  <p className="text-[11px] text-mist-2">1 klik genereert <b className="text-mist font-semibold">3 achtergronden</b> om uit te kiezen.</p>
+                  {/* No number here: the count comes from the server and isn't
+                      known until the job starts. The loader states the real one. */}
+                  <p className="text-[11px] text-mist-2">1 klik genereert <b className="text-mist font-semibold">meerdere achtergronden</b> om uit te kiezen.</p>
                   {!noPhotoMode && generatedImages.length === 0 && (
                     <button
                       type="button"
@@ -474,7 +479,9 @@ export default function AICreationModal({
                       <RefreshCw className="w-3 h-3" /> Opnieuw genereren
                     </button>
                   </div>
-                  <div className="grid grid-cols-3 gap-3">
+                  {/* Literal classes, not interpolated — Tailwind only compiles
+                      what it can see. Fewer variants → each one shown bigger. */}
+                  <div className={`grid gap-3 ${generatedImages.length <= 2 ? 'grid-cols-2' : 'grid-cols-3'}`}>
                     {generatedImages.map((url, i) => {
                       const isSel = selectedImage === url;
                       return (

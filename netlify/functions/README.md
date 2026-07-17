@@ -34,7 +34,8 @@ Uses the **official** Higgsfield API (docs.higgsfield.ai/docs/how-to/introductio
   `merk/model/variant`. Default **`higgsfield-ai/soul/standard`** (verified live:
   `200` + a real image URL).
 - Auth header: `Authorization: Key ${HF_API_KEY}:${HF_API_SECRET}`.
-- `generate-creative` → **3 parallel** `POST /{model_id}` jobs with a **flat**
+- `generate-creative` → **one parallel job per variant** (see `HF_VARIANTS`;
+  default 2) — `POST /{model_id}` with a **flat**
   body `{ prompt, aspect_ratio, resolution, negative_prompt }`. ESH prints one
   format — **A0** (841×1189 mm) — for both the A0-display and the Driehoeksbord,
   so the `aspect_ratio` is always **`3:4`**, the nearest supported ratio to A0
@@ -49,6 +50,51 @@ Uses the **official** Higgsfield API (docs.higgsfield.ai/docs/how-to/introductio
   `{ status: "failed", error }` — never a stacktrace or a key. Set **`HF_DEBUG=1`**
   to log the full HTTP status + body **server-side** (terminal only); off by default.
 
+### The prompt contract — the wrapper must not dictate composition
+
+**The user's description decides the subject AND the framing.** `buildBackgroundPrompt`
+adds craft only: light, lens, realism, plus the anti-AI negatives, the text
+suppression and a short hint for the headline overlay.
+
+This has been got wrong twice, in both directions, and both times it silently
+overruled the user:
+
+| Wrapper said | Result |
+| --- | --- |
+| "studio still-life", no people | Bare products nobody asked for |
+| "vibrant lifestyle scene", "never an isolated product", "scene alive in the background" | "close up van een broodje gezond" → a festival crowd |
+
+So: no "lifestyle", no "with people", no "still-life", no "isolated product" —
+in the prompt, in `VARIATION_HINTS` or in `NEGATIVE_PROMPT`. The variation hints
+vary **light only**; an earlier hint ("a wider angle showing more of the
+surroundings") silently overruled anyone asking for a close-up. If the
+description is silent about composition, the model chooses — that is intended.
+
+#### Keep the prompt short: meta-instructions become content
+
+Soul is a diffusion model, not an instruction-follower. It has no notion of
+"follow the description"; it turns tokens into pixels. So an instruction *about*
+the prompt lands *in* the image. Measured A/B on the identical brief
+`"bbq worsten in een gezellige tuin met lachende mensen"`:
+
+| Prompt | Result |
+| --- | --- |
+| **A** — with `"Follow this description exactly… if it describes people, a place or an occasion, show them"` | A garden party of well-dressed people, **no sausages**. On a rerun: a studio meat platter, **no garden, no people**. |
+| **B** — description + craft tokens only | The sausages **and** the garden **and** the laughing people. |
+
+B shipped. The lesson generalises: every word in the prompt should be something
+you want to see in the picture. That is also why the NSFW guard sits in
+`NEGATIVE_PROMPT` — a positive "any people are fully dressed" injects *people*
+into a close-up that never asked for any.
+
+#### Known limit: Dutch briefs on an English model
+
+Composition now follows the description, but **subject fidelity is limited by the
+language**. "broodje gezond" renders as a plain roll (no cheese/ham/egg) and
+"bbq worsten" as generic grilled meat — Soul does not know these Dutch terms.
+The next lever for accuracy is translating/enriching the brief to English before
+sending it, not adding more wrapper text.
+
 ### Measured limits (verified live, 2026-07)
 
 These are the numbers the timeouts are built on — measure again before changing them.
@@ -57,7 +103,7 @@ These are the numbers the timeouts are built on — measure again before changin
 | --- | --- |
 | Accepted `aspect_ratio` | `9:16`, `16:9`, `4:3`, `3:4`, `1:1`, `2:3`, `3:2` — **verbatim from the API's own 422**. A raw ratio (`841:1189`, `1:1.414`) is a `422`. |
 | Our A0 ratio | `3:4` (1.333) is the **nearest** supported ratio to A0 (1.414); `2:3` (1.5) is further. Verified `200` + a real image URL. |
-| Time to a finished image | **~45-60s** for the 3 parallel jobs on an idle account. |
+| Time to a finished image | **~45-60s** for the parallel jobs on an idle account. |
 | **Concurrency cap** | **4 in-flight requests per account** — `400 {"detail":"Maximum number of concurrent requests (4) has been reached"}`. |
 
 **The concurrency cap is the trap.** One click starts **3** jobs, so a second
@@ -111,14 +157,20 @@ format is identical, no code change needed.
 Config knobs: `HF_IMAGE_MODEL` (model_id), `HF_IMAGE_RESOLUTION` (model-dependent,
 e.g. `720p`/`1080p` for Soul), `HF_DEBUG` (`1` to log failures server-side).
 
-### Cost — 3 variants per request
+### Cost & speed — variants per request (`HF_VARIANTS`)
 
-Each "genereren" click makes **3 textless background variants = 3 parallel jobs
-= 3× credits** (the user gets 3 options to choose from). `generate-creative`
-starts the 3 jobs with `Promise.allSettled`; `creative-status` aggregates them
-and returns `{ status, imageUrls: [...] }`. This 3× multiplier is the key input
-for the later cost-guarding step (e.g. per-user rate limits or a variant count
-knob).
+Each "genereren" click makes **one job per variant = that many × credits**.
+`generate-creative` starts them with `Promise.allSettled`; `creative-status`
+aggregates them and returns `{ status, imageUrls: [...] }`.
+
+**Default: 2** (`DEFAULT_VARIANTS`). It was 3, but with a concurrency cap of 4
+that filled the queue and a run could crawl past 120s. At 2 there is still a
+choice, it is markedly quicker, and a second person can generate at the same
+time. Override with **`HF_VARIANTS`** (clamped to `MAX_VARIANTS` = 4, the cap —
+above it you would only queue). Raise it when the plan's concurrency is scaled.
+
+The start response carries `variants` (how many actually started), so the UI
+states a true number instead of hard-coding one.
 
 ## Credentials — never in code or git
 
