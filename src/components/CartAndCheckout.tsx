@@ -5,10 +5,11 @@
 
 import React, { useState } from 'react';
 import { CartItem, Location } from '../types';
-import { ShoppingBag, Calendar, Euro, FileCheck, HelpCircle, ArrowLeft, Send, Sparkles, Building, Mail, Phone, User, CheckCircle, FileText, Download, Maximize2, Copy } from 'lucide-react';
+import { ShoppingBag, Calendar, Euro, FileCheck, HelpCircle, ArrowLeft, Send, Sparkles, Building, Mail, Phone, User, CheckCircle, FileText, Download, Maximize2, Copy, Pencil } from 'lucide-react';
 import { motion } from 'motion/react';
-import PosterFullscreenEditor, { PosterDesign } from './PosterFullscreenEditor';
 import PosterEditor from './PosterEditor';
+import PosterPreviewOverlay from './PosterPreviewOverlay';
+import { posterRatio } from '../lib/posterComposer';
 
 interface CartAndCheckoutProps {
   cartItems: CartItem[];
@@ -24,21 +25,6 @@ interface CartAndCheckoutProps {
 // or an actual image URL (data:/http, e.g. a server-generated poster).
 const isImageUrl = (u?: string): boolean => !!u && (u.startsWith('data:') || u.startsWith('http'));
 
-// Reconstruct an editable PosterDesign from a saved AI-generated creative.
-function creativeToDesign(locationId: string, creative: NonNullable<CartItem['creative']>): PosterDesign {
-  return {
-    id: 'cart-' + locationId,
-    title: creative.title ?? '',
-    subtitle: creative.subtitle ?? '',
-    bgColor: creative.previewUrl ?? 'bg-slate-950',
-    textColor: creative.textColor ?? 'text-white',
-    styleName: creative.styleName ?? 'Aangepast',
-    align: creative.align ?? 'center',
-    titleScale: creative.titleScale ?? 14,
-    badgeText: creative.badgeText,
-  };
-}
-
 export default function CartAndCheckout({
   cartItems,
   onRemoveItem,
@@ -48,8 +34,10 @@ export default function CartAndCheckout({
   onBackToLocations,
   onClearCart
 }: CartAndCheckoutProps) {
-  // Location id whose saved poster is being previewed/edited fullscreen
-  const [fullscreenLocationId, setFullscreenLocationId] = useState<string | null>(null);
+  // Viewing and editing are separate intents: "Bekijken" opens the big preview,
+  // "Aanpassen" opens the composer. The preview can hand over to the editor.
+  const [previewLocationId, setPreviewLocationId] = useState<string | null>(null);
+  const [editLocationId, setEditLocationId] = useState<string | null>(null);
   const [isOrdered, setIsOrdered] = useState(false);
   const [companyName, setCompanyName] = useState('');
   const [contactName, setContactName] = useState('');
@@ -150,51 +138,48 @@ export default function CartAndCheckout({
     );
   }
 
-  const fullscreenItem = cartItems.find((i) => i.location.id === fullscreenLocationId);
+  const previewItem = cartItems.find((i) => i.location.id === previewLocationId);
+  const editItem = cartItems.find((i) => i.location.id === editLocationId);
+  const previewPoster = previewItem?.creative?.poster;
+  const editPoster = editItem?.creative?.poster;
 
   return (
     <div className="space-y-6">
+      {/* Beeldvullend bekijken — the poster at the size it deserves, with the
+          safe-zone guide switchable so you can see the real print. */}
+      {previewItem && previewPoster && (
+        <PosterPreviewOverlay
+          ratio={posterRatio()}
+          fields={previewPoster.fields}
+          template={previewPoster.template}
+          theme={previewPoster.theme}
+          photoUrl={previewPoster.photoUrl}
+          caption={`${previewItem.location.street}, ${previewItem.location.city}`}
+          onEdit={() => {
+            setEditLocationId(previewItem.location.id);
+            setPreviewLocationId(null);
+          }}
+          onClose={() => setPreviewLocationId(null)}
+        />
+      )}
+
       {/* Live editor for a saved AI creative — uses the real template composer so
           every field/theme/template change re-renders the poster immediately. */}
-      {fullscreenItem?.creative?.type === 'ai-generated' && fullscreenItem.creative.poster && (
+      {editItem?.creative?.type === 'ai-generated' && editPoster && (
         <PosterEditor
-          location={fullscreenItem.location}
-          payload={fullscreenItem.creative.poster}
-          onClose={() => setFullscreenLocationId(null)}
+          location={editItem.location}
+          payload={editPoster}
+          onClose={() => setEditLocationId(null)}
           onApply={(payload, previewUrl) => {
-            onUpdateCreative(fullscreenItem.location.id, {
-              ...fullscreenItem.creative,
+            onUpdateCreative(editItem.location.id, {
+              ...editItem.creative,
               type: 'ai-generated',
               previewUrl,
               poster: payload,
               title: payload.fields.headline.trim() || 'AI-poster',
-              subtitle: payload.fields.subline.trim() || payload.fields.offer.trim() || fullscreenItem.creative?.subtitle || '',
+              subtitle: payload.fields.subline.trim() || payload.fields.offer.trim() || editItem.creative?.subtitle || '',
             });
-            setFullscreenLocationId(null);
-          }}
-        />
-      )}
-
-      {/* Fallback: legacy CSS-poster editor for older creatives without a design payload */}
-      {fullscreenItem?.creative?.type === 'ai-generated' && !fullscreenItem.creative.poster && (
-        <PosterFullscreenEditor
-          location={fullscreenItem.location}
-          design={creativeToDesign(fullscreenItem.location.id, fullscreenItem.creative)}
-          onClose={() => setFullscreenLocationId(null)}
-          onApply={(updated) => {
-            onUpdateCreative(fullscreenItem.location.id, {
-              ...fullscreenItem.creative,
-              type: 'ai-generated',
-              title: updated.title,
-              subtitle: updated.subtitle,
-              previewUrl: updated.bgColor,
-              textColor: updated.textColor,
-              styleName: updated.styleName,
-              align: updated.align,
-              titleScale: updated.titleScale,
-              badgeText: updated.badgeText,
-            });
-            setFullscreenLocationId(null);
+            setEditLocationId(null);
           }}
         />
       )}
@@ -275,13 +260,13 @@ export default function CartAndCheckout({
                       {item.creative?.previewUrl && isImageUrl(item.creative.previewUrl) ? (
                         <button
                           type="button"
-                          onClick={item.creative.type === 'ai-generated' ? () => setFullscreenLocationId(item.location.id) : undefined}
-                          disabled={item.creative.type !== 'ai-generated'}
-                          title={item.creative.type === 'ai-generated' ? 'Beeldvullend bekijken & aanpassen' : item.creative.title}
-                          className="group relative w-11 h-16 shrink-0 rounded-md overflow-hidden shadow ring-1 ring-black/5 bg-paper-2 cursor-pointer disabled:cursor-default"
+                          onClick={item.creative.poster ? () => setPreviewLocationId(item.location.id) : undefined}
+                          disabled={!item.creative.poster}
+                          title={item.creative.poster ? 'Groot bekijken' : item.creative.title}
+                          className="group relative w-11 h-16 shrink-0 rounded-md overflow-hidden shadow ring-1 ring-black/5 bg-paper-2 cursor-zoom-in disabled:cursor-default"
                           style={{ backgroundImage: `url("${item.creative.previewUrl}")`, backgroundSize: 'cover', backgroundPosition: 'center' }}
                         >
-                          {item.creative.type === 'ai-generated' && (
+                          {item.creative.poster && (
                             <span className="absolute inset-0 bg-black/0 group-hover:bg-black/30 flex items-center justify-center transition-colors">
                               <Maximize2 className="w-3 h-3 text-white opacity-0 group-hover:opacity-100" />
                             </span>
@@ -304,14 +289,25 @@ export default function CartAndCheckout({
                     </div>
 
                     <div className="flex items-center gap-2 shrink-0">
-                      {item.creative?.type === 'ai-generated' && (
-                        <button
-                          onClick={() => setFullscreenLocationId(item.location.id)}
-                          className="px-3 py-1.5 rounded-full font-bold text-[11px] cursor-pointer transition-all bg-cobalt-soft hover:bg-cobalt-soft text-cobalt border border-cobalt-soft flex items-center gap-1"
-                        >
-                          <Maximize2 className="w-3 h-3 shrink-0" />
-                          <span>Bekijken</span>
-                        </button>
+                      {item.creative?.poster && (
+                        <>
+                          <button
+                            onClick={() => setPreviewLocationId(item.location.id)}
+                            title="De poster beeldvullend bekijken"
+                            className="px-3 py-1.5 rounded-full font-bold text-[11px] cursor-pointer transition-all bg-cobalt-soft hover:bg-white text-cobalt border border-cobalt-soft flex items-center gap-1"
+                          >
+                            <Maximize2 className="w-3 h-3 shrink-0" />
+                            <span>Groot bekijken</span>
+                          </button>
+                          <button
+                            onClick={() => setEditLocationId(item.location.id)}
+                            title="Tekst, sjabloon en kleur aanpassen"
+                            className="px-3 py-1.5 rounded-full font-bold text-[11px] cursor-pointer transition-all bg-white hover:bg-paper-2 text-mist border border-line shadow-soft flex items-center gap-1"
+                          >
+                            <Pencil className="w-3 h-3 shrink-0" />
+                            <span>Aanpassen</span>
+                          </button>
+                        </>
                       )}
                       {item.creative?.previewUrl && cartItems.length > 1 && (
                         <button
@@ -332,7 +328,10 @@ export default function CartAndCheckout({
                         }`}
                       >
                         {!item.creative && <Sparkles className="w-3 h-3 text-cobalt shrink-0" />}
-                        <span>{item.creative ? 'Wijzigen' : 'Creatie toevoegen'}</span>
+                        {/* "Aanpassen" edits this poster; this one swaps the whole
+                            creative (upload / regenerate), so it must not also
+                            read as "wijzigen". */}
+                        <span>{item.creative ? 'Vervangen' : 'Creatie toevoegen'}</span>
                       </button>
                     </div>
                   </div>

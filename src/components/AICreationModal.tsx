@@ -231,8 +231,9 @@ export default function AICreationModal({
       {/* Backdrop */}
       <div className="absolute inset-0 bg-ink/50 backdrop-blur-xs" onClick={onClose} />
 
-      {/* Container */}
-      <div className="relative bg-white border border-line rounded-card overflow-hidden shadow-soft-lg max-w-2xl w-full flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200">
+      {/* Container. Wide enough for the poster preview (a real A0 sheet) to sit
+          beside its fields once step B is reached. */}
+      <div className="relative bg-white border border-line rounded-card overflow-hidden shadow-soft-lg max-w-4xl w-full flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200">
 
         {/* Header */}
         <div className="p-6 border-b border-line flex justify-between items-center bg-paper-2">
