@@ -1,9 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
-import { UploadCloud, X, Type } from 'lucide-react';
+import { useState } from 'react';
+import { UploadCloud, X, Type, Maximize2 } from 'lucide-react';
+import PosterCanvas, { useLoadedImage } from './PosterCanvas';
+import PosterPreviewOverlay from './PosterPreviewOverlay';
 import {
-  drawPoster,
-  ensureFonts,
-  loadImage,
   TEMPLATES,
   THEMES,
   type PosterFields,
@@ -12,7 +11,24 @@ import {
   type Ratio,
 } from '../lib/posterComposer';
 
-const PREVIEW_W = 260;
+/**
+ * Drawing buffer for the inline preview. Well above its display size so CSS only
+ * scales it down — an A0 poster judged at ~300px needs every pixel it can get.
+ */
+const PREVIEW_RENDER_W = 760;
+
+/**
+ * Display height of the inline preview: fills the space available, with a floor
+ * that keeps an A0 sheet readable and a ceiling so the fields stay in view.
+ * Width follows from the A0 ratio (≈ height / 1.414), so 420px tall ≈ 297px wide
+ * and the 480px ceiling lands exactly on PREVIEW_COL_W.
+ */
+const PREVIEW_HEIGHT = 'clamp(380px, 46vh, 480px)';
+
+/** Width of the preview column. Must cover the widest the poster can get
+ *  (480 / 1.414 ≈ 340), otherwise the column track and the poster disagree. */
+const PREVIEW_COL_W = 340;
+
 const THUMB_W = 96;
 const MAX_LOGO_BYTES = 2 * 1024 * 1024;
 
@@ -25,73 +41,18 @@ interface Props {
   onTemplateChange: (t: TemplateKey) => void;
   theme: ThemeKey;
   onThemeChange: (t: ThemeKey) => void;
-  previewWidth?: number;
-}
-
-/** A self-contained canvas that renders one poster (used for the big preview
- *  and the small template thumbnails). Redraws on any input change. */
-function PosterCanvas({
-  width, ratio, fields, template, theme, photo, logo, guides = false,
-}: {
-  width: number;
-  ratio: Ratio;
-  fields: PosterFields;
-  template: TemplateKey;
-  theme: ThemeKey;
-  photo: HTMLImageElement | null;
-  logo: HTMLImageElement | null;
-  /** Show the safe-zone guide — big preview only, and never in the export. */
-  guides?: boolean;
-}) {
-  const ref = useRef<HTMLCanvasElement>(null);
-  useEffect(() => {
-    let cancelled = false;
-    const canvas = ref.current;
-    if (!canvas) return;
-    const W = width;
-    const H = Math.round((width * ratio.h) / ratio.w);
-    canvas.width = W;
-    canvas.height = H;
-    (async () => {
-      await ensureFonts();
-      if (cancelled) return;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
-      drawPoster(ctx, { W, H, photo, logo, fields, template, theme, ratio, guides });
-    })();
-    return () => { cancelled = true; };
-  }, [width, ratio, fields, template, theme, photo, logo, guides]);
-  return <canvas ref={ref} className="w-full h-auto block" />;
 }
 
 export default function PosterComposer({
   photoUrl, ratio, fields, onFieldsChange, template, onTemplateChange, theme, onThemeChange,
-  previewWidth = PREVIEW_W,
 }: Props) {
-  const [photoImg, setPhotoImg] = useState<HTMLImageElement | null>(null);
-  const [logoImg, setLogoImg] = useState<HTMLImageElement | null>(null);
   const [logoError, setLogoError] = useState<string | null>(null);
+  const [isZoomed, setIsZoomed] = useState(false);
 
   const set = (patch: Partial<PosterFields>) => onFieldsChange({ ...fields, ...patch });
 
-  useEffect(() => {
-    let cancelled = false;
-    if (!photoUrl) { setPhotoImg(null); return; }
-    setPhotoImg(null);
-    loadImage(photoUrl)
-      .then((img) => { if (!cancelled) setPhotoImg(img); })
-      .catch(() => { if (!cancelled) setPhotoImg(null); });
-    return () => { cancelled = true; };
-  }, [photoUrl]);
-
-  useEffect(() => {
-    let cancelled = false;
-    if (!fields.logo) { setLogoImg(null); return; }
-    loadImage(fields.logo)
-      .then((img) => { if (!cancelled) setLogoImg(img); })
-      .catch(() => { if (!cancelled) setLogoImg(null); });
-    return () => { cancelled = true; };
-  }, [fields.logo]);
+  const photoImg = useLoadedImage(photoUrl);
+  const logoImg = useLoadedImage(fields.logo);
 
   const onLogo = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -112,6 +73,17 @@ export default function PosterComposer({
 
   return (
     <div className="space-y-4">
+      {isZoomed && (
+        <PosterPreviewOverlay
+          ratio={ratio}
+          fields={fields}
+          template={template}
+          theme={theme}
+          photoUrl={photoUrl}
+          onClose={() => setIsZoomed(false)}
+        />
+      )}
+
       <div className="flex items-center justify-between">
         <span className="text-xs font-bold text-mist">Ontwerp je poster</span>
         <span className="text-[10px] font-mono font-bold text-cobalt bg-cobalt-soft border border-cobalt-soft rounded-full px-2 py-0.5">
@@ -119,17 +91,53 @@ export default function PosterComposer({
         </span>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,240px)_1fr] gap-5 items-start">
-        {/* Big live preview */}
-        <div className="space-y-2">
-          <div className="rounded-card-sm overflow-hidden border border-line shadow-soft bg-paper-2 mx-auto" style={{ maxWidth: previewWidth }}>
-            <PosterCanvas width={previewWidth} ratio={ratio} fields={fields} template={template} theme={theme} photo={photoImg} logo={logoImg} guides />
-          </div>
-          <p className="text-[10px] text-mist-2 text-center leading-snug px-2">
+      {/* A fixed preview track: an `auto` track would be sized by the caption's
+          max-content width and starve the fields. */}
+      <div
+        className="grid grid-cols-1 gap-5 items-start sm:[grid-template-columns:var(--preview-col)_minmax(0,1fr)]"
+        style={{ ['--preview-col' as string]: `${PREVIEW_COL_W}px` }}
+      >
+        {/* Live preview — big enough to actually judge an A0 sheet. */}
+        <div className="space-y-2 flex flex-col items-center">
+          <button
+            type="button"
+            onClick={() => setIsZoomed(true)}
+            title="Groot bekijken"
+            aria-label="Poster groot bekijken"
+            className="group relative inline-flex rounded-card-sm overflow-hidden border border-line shadow-soft bg-paper-2 cursor-zoom-in transition-all hover:border-cobalt max-w-full"
+            style={{ height: PREVIEW_HEIGHT }}
+          >
+            <PosterCanvas
+              width={PREVIEW_RENDER_W}
+              ratio={ratio}
+              fields={fields}
+              template={template}
+              theme={theme}
+              photo={photoImg}
+              logo={logoImg}
+              guides
+              className="block h-full w-auto max-w-full"
+            />
+            <span className="absolute inset-0 bg-ink/0 group-hover:bg-ink/25 transition-colors flex items-center justify-center">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/95 text-ink px-3 py-1.5 text-[11px] font-bold opacity-0 group-hover:opacity-100 transition-opacity shadow-soft">
+                <Maximize2 className="w-3.5 h-3.5" /> Groot bekijken
+              </span>
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setIsZoomed(true)}
+            className="flex items-center justify-center gap-1.5 rounded-full border border-cobalt-soft bg-cobalt-soft px-3 py-1.5 text-[11px] font-bold text-cobalt hover:bg-white transition-all cursor-pointer"
+          >
+            <Maximize2 className="w-3.5 h-3.5 shrink-0" /> Groot bekijken
+          </button>
+
+          <p className="text-[10px] text-mist-2 text-center leading-snug">
             <span className="inline-block align-middle w-3 border-t border-dashed border-cobalt mr-1" />
             De stippellijn is de veilige zone: het frame valt over de rand, dus tekst blijft erbinnen. De foto mag doorlopen. Deze lijn staat niet op de druk.
           </p>
-          {activeTpl && <p className="text-[10px] text-mist-2 text-center leading-snug px-2">{activeTpl.hint}</p>}
+          {activeTpl && <p className="text-[10px] text-mist-2 text-center leading-snug">{activeTpl.hint}</p>}
         </div>
 
         {/* Controls */}

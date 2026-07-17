@@ -58,7 +58,9 @@ export default function PosterEditor({ location, payload, onApply, onClose }: Pr
     <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-ink/60 backdrop-blur-xs" onClick={onClose} />
 
-      <div className="relative bg-white border border-line rounded-card overflow-hidden shadow-soft-lg max-w-3xl w-full flex flex-col max-h-[92vh] animate-in fade-in zoom-in-95 duration-200">
+      {/* Wider than a stock modal: the preview is now a real A0 sheet, and the
+          fields sit next to it rather than under it. */}
+      <div className="relative bg-white border border-line rounded-card overflow-hidden shadow-soft-lg max-w-5xl w-full flex flex-col max-h-[92vh] animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
         <div className="p-5 border-b border-line flex justify-between items-center bg-paper-2">
           <div>
@@ -88,7 +90,6 @@ export default function PosterEditor({ location, payload, onApply, onClose }: Pr
             onTemplateChange={setTemplate}
             theme={theme}
             onThemeChange={setTheme}
-            previewWidth={300}
           />
           {error && <p className="text-[11px] text-red-600 font-medium mt-3">{error}</p>}
         </div>
