@@ -29,7 +29,9 @@ function gemeenteImage(gemeente: Gemeente, product: Product): string {
 
 /**
  * Delivery specs. Identical for both products: ESH's spec sheet knows one poster
- * format, and material must be in 21 days before the placement day.
+ * format. We frame delivery as "print-ready = faster" and tie placement to the
+ * gemeente's fixed day (from the data) — deliberately no hard turnaround number,
+ * since the exact lead time is a production matter, not a website promise.
  */
 function specsFor(gemeente: Gemeente): LocationSpecs {
   return {
@@ -39,7 +41,7 @@ function specsFor(gemeente: Gemeente): LocationSpecs {
     restrictions: [
       'Geen politiek gevoelige boodschappen zonder voorafgaande toetsing.',
     ],
-    deadline: `Materiaal uiterlijk 21 dagen voor plaatsing aanleveren. Plaatsing in ${gemeente.name} is op ${gemeente.plaatsingsdag}.`,
+    deadline: `Je uiting is meteen drukklaar — juiste maat en marges, niets meer te controleren, dus sneller de straat op. Zodra je materiaal klaar is, plaatsen we op de eerstvolgende plaatsingsdag in ${gemeente.name} (${gemeente.plaatsingsdag}).`,
   };
 }
 

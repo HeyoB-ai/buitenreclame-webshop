@@ -15,7 +15,7 @@ export default function CinemaStrip() {
       <div className="in">
         <span className="eyebrow"><span className="pulse" />Vanavond op straat</span>
         <h2>Jouw zaak, groot in het straatbeeld</h2>
-        <p>Precies waar je klanten langslopen — op weg naar werk, naar de winkel, naar huis. Elke gemeente heeft een vaste plaatsingsdag; je materiaal lever je ruim van tevoren aan.</p>
+        <p>Precies waar je klanten langslopen — op weg naar werk, naar de winkel, naar huis. Je uiting is hier meteen drukklaar, dus sneller de straat op: zodra je materiaal klaar is, plaatsen we op de eerstvolgende plaatsingsdag in jouw gemeente.</p>
         <a href="#top" className="btn btn-light">Bereken mijn bereik <span className="arr">→</span></a>
       </div>
     </section>

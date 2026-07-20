@@ -393,7 +393,7 @@ export default function AICreationModal({
                 <ul className="text-xs text-mist space-y-1 list-disc pl-4 leading-relaxed">
                   <li><strong>Papierformaat:</strong> Hou rekening met een snijmarge van 5mm rondom.</li>
                   <li><strong>Contrast:</strong> Onze systemen adviseren een minimale tekst-achtergrond contrastverhouding van 4.5:1.</li>
-                  <li><strong>Aanlevering:</strong> Lever je materiaal uiterlijk 21 dagen voor de plaatsingsdag aan — elke gemeente heeft een vaste dag.</li>
+                  <li><strong>Drukklaar:</strong> Je uiting krijgt meteen het juiste formaat en de juiste marges — geen controle-gedoe achteraf, dus sneller de straat op. Plaatsing op de vaste plaatsingsdag in {location.city}.</li>
                 </ul>
               </div>
             </div>

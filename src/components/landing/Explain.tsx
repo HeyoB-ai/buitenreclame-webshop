@@ -28,7 +28,7 @@ export default function Explain() {
           <div className="term">
             <div className="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg></div>
             <h4>Weken draaien</h4>
-            <p>Elke gemeente heeft een vaste plaatsingsdag — maandag of dinsdag. Je materiaal moet 21 dagen daarvoor binnen zijn. Langer dan {ADVIES_MAX_WEKEN} weken adviseert ESH niet: daarna zien grotendeels dezelfde mensen 'm nog eens.</p>
+            <p>Elke gemeente heeft een vaste plaatsingsdag — maandag of dinsdag. Je uiting lever je meteen drukklaar aan: juiste formaat, juiste marges, niets meer te controleren. Daardoor kan je campagne sneller de straat op dan met losse bestanden die nog nagekeken moeten worden — zodra je materiaal klaar is, plaatsen we op de eerstvolgende plaatsingsdag. Langer dan {ADVIES_MAX_WEKEN} weken adviseert ESH niet: daarna zien grotendeels dezelfde mensen 'm nog eens.</p>
           </div>
         </div>
       </div>

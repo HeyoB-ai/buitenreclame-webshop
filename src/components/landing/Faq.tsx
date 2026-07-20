@@ -24,7 +24,11 @@ export default function Faq() {
           </div>
           <div className="q">
             <h4><span className="qm">?</span>Zit ik ergens aan vast?</h4>
-            <p>Nee. Je kiest zelf hoe lang je draait — ESH adviseert maximaal {ADVIES_MAX_WEKEN} weken. Geen abonnement, geen contract met een bureau, geen kleine lettertjes. Wel goed om te weten: je materiaal moet 21 dagen voor de plaatsingsdag binnen zijn.</p>
+            <p>Nee. Je kiest zelf hoe lang je draait — ESH adviseert maximaal {ADVIES_MAX_WEKEN} weken. Geen abonnement, geen contract met een bureau, geen kleine lettertjes.</p>
+          </div>
+          <div className="q">
+            <h4><span className="qm">?</span>Hoe snel hangt m'n advertentie er?</h4>
+            <p>Dat hangt af van de drukte en van de vaste plaatsingsdag van je gemeente — een exacte datum beloven we niet. Wel dit: je uiting is hier meteen drukklaar (juist formaat, juiste marges, niets meer na te kijken), en dat scheelt in het proces. Zodra je materiaal klaar is, plaatsen we op de eerstvolgende plaatsingsdag in jouw gemeente.</p>
           </div>
         </div>
       </div>
