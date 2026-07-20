@@ -55,7 +55,14 @@ export interface PrintCheckResult {
   summary: string;
 }
 
-const MIN_SANE_BYTES = 50 * 1024; // < 50 KB → almost certainly too low-res
+/**
+ * A print-ready A0 raster (≈ 1×1.5 m, ~35 megapixel at 150 dpi) holds far too
+ * much detail to weigh only a few hundred KB — real files are typically several
+ * MB. Below this floor the file is almost certainly too light for a sharp print,
+ * so it never gets a green "prima". Kept conservative to avoid false alarms on a
+ * genuinely high-res but well-compressed file.
+ */
+const MIN_PRINT_BYTES = 500 * 1024; // 500 KB
 const MAX_BYTES = 25 * 1024 * 1024; // 25 MB, matches the upload hint
 
 function isPdf(file: File): boolean {
@@ -103,14 +110,25 @@ function checkFormat(file: File): CheckItem {
   };
 }
 
-function checkSize(file: File): CheckItem {
+/**
+ * File weight as a print-readiness signal. `resolutionOk` (when known) keeps this
+ * consistent with the resolution check: a file that fails on resolution must
+ * never show a reassuring green "prima" here.
+ */
+function checkSize(file: File, resolutionOk?: boolean): CheckItem {
+  const label = 'Bestandsgrootte';
+  const f = fmtBytes(file.size);
   if (file.size > MAX_BYTES) {
-    return { key: 'size', label: 'Bestandsgrootte', status: 'warn', detail: `${fmtBytes(file.size)} — groter dan 25 MB. Comprimeer het bestand of lever het als JPG aan.` };
+    return { key: 'size', label, status: 'warn', detail: `${f} — groter dan 25 MB. Comprimeer het bestand of lever het als JPG aan.` };
   }
-  if (file.size < MIN_SANE_BYTES) {
-    return { key: 'size', label: 'Bestandsgrootte', status: 'warn', detail: `${fmtBytes(file.size)} — erg klein; dat wijst meestal op een te lage kwaliteit voor een A0-poster.` };
+  if (file.size < MIN_PRINT_BYTES) {
+    return { key: 'size', label, status: 'warn', detail: `Bestand vrij klein (${f}) — voor scherpe druk op A0 is doorgaans een groter, hoge-resolutiebestand nodig.` };
   }
-  return { key: 'size', label: 'Bestandsgrootte', status: 'ok', detail: `${fmtBytes(file.size)} — prima.` };
+  if (resolutionOk === false) {
+    // Not small in bytes, but the pixels are too few — don't reassure.
+    return { key: 'size', label, status: 'warn', detail: `${f} — op zichzelf niet klein, maar de resolutie is te laag voor scherpe A0-druk (zie hieronder).` };
+  }
+  return { key: 'size', label, status: 'ok', detail: `${f} — voldoende voor druk op A0.` };
 }
 
 /** Aspect-ratio vs A0 portrait. Reliable for raster; not measurable for PDF. */
@@ -169,22 +187,26 @@ function buildSummary(items: CheckItem[]): { allOk: boolean; partial: boolean; s
  * warning, not a crash.
  */
 export async function analyzeUploadForPrint(file: File): Promise<PrintCheckResult> {
-  const items: CheckItem[] = [checkFormat(file), checkSize(file)];
+  const format = checkFormat(file);
 
   if (isPdf(file)) {
     // A PDF's raster resolution isn't reliably readable in the browser — be honest.
-    items.push({
-      key: 'ratio',
-      label: 'Verhouding (A0, staand)',
-      status: 'info',
-      detail: 'Niet automatisch te meten voor een PDF. Controleer zelf of het document staand A0 (841×1189 mm) is.',
-    });
-    items.push({
-      key: 'resolution',
-      label: 'Resolutie voor druk op A0',
-      status: 'info',
-      detail: 'Niet automatisch te meten voor een PDF. Zorg dat afbeeldingen erin ~150 dpi op A0-formaat zijn.',
-    });
+    const items: CheckItem[] = [
+      format,
+      checkSize(file), // no pixel resolution to reconcile with for a PDF
+      {
+        key: 'ratio',
+        label: 'Verhouding (A0, staand)',
+        status: 'info',
+        detail: 'Niet automatisch te meten voor een PDF. Controleer zelf of het document staand A0 (841×1189 mm) is.',
+      },
+      {
+        key: 'resolution',
+        label: 'Resolutie voor druk op A0',
+        status: 'info',
+        detail: 'Niet automatisch te meten voor een PDF. Zorg dat afbeeldingen erin ~150 dpi op A0-formaat zijn.',
+      },
+    ];
     return { items, ...buildSummary(items) };
   }
 
@@ -193,16 +215,23 @@ export async function analyzeUploadForPrint(file: File): Promise<PrintCheckResul
     const img = await decode(dataUrl);
     const w = img.naturalWidth;
     const h = img.naturalHeight;
-    items.push(checkRatio(w, h));
-    items.push(checkResolution(w, h));
+    // Resolution first, so the size check can stay consistent with it.
+    const ratio = checkRatio(w, h);
+    const resolution = checkResolution(w, h);
+    const size = checkSize(file, resolution.status === 'ok');
+    const items: CheckItem[] = [format, size, ratio, resolution];
     return { items, imageDataUrl: dataUrl, width: w, height: h, ...buildSummary(items) };
   } catch {
-    items.push({
-      key: 'ratio',
-      label: 'Verhouding & resolutie',
-      status: 'warn',
-      detail: 'Kon de afbeelding niet uitlezen. Controleer of het een geldige PNG of JPG is.',
-    });
+    const items: CheckItem[] = [
+      format,
+      checkSize(file),
+      {
+        key: 'ratio',
+        label: 'Verhouding & resolutie',
+        status: 'warn',
+        detail: 'Kon de afbeelding niet uitlezen. Controleer of het een geldige PNG of JPG is.',
+      },
+    ];
     return { items, ...buildSummary(items) };
   }
 }
