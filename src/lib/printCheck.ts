@@ -35,7 +35,7 @@ export const A0_TARGET_PX = { w: pxForDpi(A0_W_MM), h: pxForDpi(A0_H_MM) };
 export type CheckStatus = 'ok' | 'warn' | 'info';
 
 export interface CheckItem {
-  key: 'format' | 'size' | 'ratio' | 'resolution';
+  key: 'format' | 'colorspace' | 'size' | 'ratio' | 'resolution';
   label: string;
   status: CheckStatus;
   detail: string;
@@ -97,16 +97,57 @@ function fmtBytes(b: number): string {
   return `${(b / (1024 * 1024)).toFixed(1)} MB`;
 }
 
+function rasterKind(file: File): string {
+  const t = (file.type.split('/')[1] || '').toUpperCase();
+  if (t === 'JPEG') return 'JPG';
+  return t || 'afbeelding';
+}
+
+/**
+ * Format vs ESH's aanleverspec: print wants a PDF (CMYK). PNG/JPG are RGB screen
+ * formats, so they are a warning — never a green "prima".
+ */
 function checkFormat(file: File): CheckItem {
-  if (isRaster(file) || isPdf(file)) {
-    const kind = isPdf(file) ? 'PDF' : (file.type.split('/')[1] || 'afbeelding').toUpperCase();
-    return { key: 'format', label: 'Bestandsformaat', status: 'ok', detail: `${kind} — een bruikbaar formaat voor druk.` };
+  const label = 'Bestandsformaat';
+  if (isPdf(file)) {
+    return { key: 'format', label, status: 'ok', detail: 'PDF — het juiste aanleverformaat voor druk.' };
+  }
+  if (isRaster(file)) {
+    return {
+      key: 'format',
+      label,
+      status: 'warn',
+      detail: `${rasterKind(file)} is een schermformaat (RGB). Voor druk levert ESH bij voorkeur een PDF in CMYK aan.`,
+    };
   }
   return {
     key: 'format',
-    label: 'Bestandsformaat',
+    label,
     status: 'warn',
-    detail: `"${file.type || 'onbekend'}" is een ongebruikelijk formaat. Lever bij voorkeur PNG, JPG of PDF aan.`,
+    detail: `"${file.type || 'onbekend'}" is een ongebruikelijk formaat. Lever bij voorkeur een PDF (of anders PNG/JPG) aan.`,
+  };
+}
+
+/**
+ * Colour space. A browser decodes every upload to RGB and cannot reliably read
+ * whether a file is CMYK, so this is an honest INFO line — never a green
+ * "CMYK ✓". Print needs CMYK; screen files (PNG/JPG) are RGB.
+ */
+function checkColorSpace(file: File): CheckItem {
+  const label = 'Kleurruimte (CMYK)';
+  if (isPdf(file)) {
+    return {
+      key: 'colorspace',
+      label,
+      status: 'info',
+      detail: 'Voor druk is CMYK vereist. Of deze PDF in CMYK is opgemaakt, kunnen we in de browser niet lezen — laat je ontwerper of ESH dit bevestigen.',
+    };
+  }
+  return {
+    key: 'colorspace',
+    label,
+    status: 'info',
+    detail: 'Voor druk is CMYK vereist. Een PNG of JPG is een RGB-schermbestand; kleuren kunnen op de druk afwijken. Lever bij voorkeur een CMYK-PDF aan.',
   };
 }
 
@@ -177,8 +218,8 @@ function buildSummary(items: CheckItem[]): { allOk: boolean; partial: boolean; s
   const allOk = !hasWarn;
   let summary: string;
   if (hasWarn) summary = 'Aandachtspunten gevonden — je mag het toch aanleveren, maar lees de tips.';
-  else if (partial) summary = 'Formaat is oké; verhouding en resolutie zijn voor dit bestandstype niet automatisch te meten.';
-  else summary = 'Technisch geschikt voor druk op A0.';
+  else if (partial) summary = 'Geen technische bezwaren gevonden. Let op: kleurruimte (CMYK) en enkele PDF-eigenschappen kunnen we niet automatisch controleren — dit is een indicatie, geen garantie.';
+  else summary = 'Technisch geen bezwaren gevonden — een indicatie, geen garantie.';
   return { allOk, partial, summary };
 }
 
@@ -189,22 +230,26 @@ function buildSummary(items: CheckItem[]): { allOk: boolean; partial: boolean; s
 export async function analyzeUploadForPrint(file: File): Promise<PrintCheckResult> {
   const format = checkFormat(file);
 
+  const colorspace = checkColorSpace(file);
+
   if (isPdf(file)) {
-    // A PDF's raster resolution isn't reliably readable in the browser — be honest.
+    // A PDF's page geometry needs a real PDF library (pdf.js) to read reliably;
+    // parsing raw bytes is fragile, so we stay honest and don't guess.
     const items: CheckItem[] = [
       format,
+      colorspace,
       checkSize(file), // no pixel resolution to reconcile with for a PDF
       {
         key: 'ratio',
         label: 'Verhouding (A0, staand)',
         status: 'info',
-        detail: 'Niet automatisch te meten voor een PDF. Controleer zelf of het document staand A0 (841×1189 mm) is.',
+        detail: 'Niet automatisch te meten voor een PDF in de browser. Controleer zelf of het document staand A0 (841×1189 mm) is.',
       },
       {
         key: 'resolution',
         label: 'Resolutie voor druk op A0',
         status: 'info',
-        detail: 'Niet automatisch te meten voor een PDF. Zorg dat afbeeldingen erin ~150 dpi op A0-formaat zijn.',
+        detail: 'Niet automatisch te meten voor een PDF in de browser. Zorg dat afbeeldingen erin ~150 dpi op A0-formaat zijn.',
       },
     ];
     return { items, ...buildSummary(items) };
@@ -219,11 +264,12 @@ export async function analyzeUploadForPrint(file: File): Promise<PrintCheckResul
     const ratio = checkRatio(w, h);
     const resolution = checkResolution(w, h);
     const size = checkSize(file, resolution.status === 'ok');
-    const items: CheckItem[] = [format, size, ratio, resolution];
+    const items: CheckItem[] = [format, colorspace, size, ratio, resolution];
     return { items, imageDataUrl: dataUrl, width: w, height: h, ...buildSummary(items) };
   } catch {
     const items: CheckItem[] = [
       format,
+      colorspace,
       checkSize(file),
       {
         key: 'ratio',

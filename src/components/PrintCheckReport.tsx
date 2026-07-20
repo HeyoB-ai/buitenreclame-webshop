@@ -26,7 +26,7 @@ export default function PrintCheckReport({ result }: { result: PrintCheckResult 
 
       <div className="bg-paper-2 border border-line p-4 rounded-card-sm space-y-3">
         <span className="text-[10px] font-mono uppercase tracking-wider text-mist-2 block border-b border-line pb-2 font-bold">
-          Technische controle — drukgeschiktheid A0
+          Technische indicatie — drukgeschiktheid A0
         </span>
 
         <div className="space-y-3 text-xs text-left">
@@ -49,8 +49,9 @@ export default function PrintCheckReport({ result }: { result: PrintCheckResult 
         <div className="flex items-start gap-2 border-t border-line pt-3 text-[11px] text-mist-2 leading-snug text-left">
           <Info className="w-3.5 h-3.5 mt-0.5 shrink-0" />
           <span>
-            Dit is een <b>technische</b> controle (formaat en scherpte). Of de inhoud is toegestaan — denk aan
-            aanstootgevende of verboden categorieën — beoordeelt ESH en de gemeente, niet deze tool.
+            Dit is een <b>technische indicatie</b> van drukgeschiktheid (formaat, scherpte, kleurruimte) — geen
+            garantie. Of de inhoud is toegestaan — denk aan aanstootgevende of verboden categorieën — beoordeelt
+            ESH en de gemeente, niet deze tool.
           </span>
         </div>
       </div>
