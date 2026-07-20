@@ -124,6 +124,12 @@ export function buildBackgroundPrompt(userPrompt, variant) {
   );
 }
 
+// TEMPORARY SAFETY KILL SWITCH — the current image model (Soul) produced
+// inappropriate output and must not run. While false, any generation request is
+// refused with a friendly message and no model is ever called. Flip back to true
+// only once a safe image model is in place. Mirrors AI_DESIGN_ENABLED in the UI.
+const AI_DESIGN_ENABLED = false;
+
 export default async (req) => {
   // Safe diagnostics (GET or ?debug=1). Returns ONLY booleans + non-secret
   // values so you can see what the function really sees — never the keys.
@@ -143,6 +149,14 @@ export default async (req) => {
 
   if (req.method !== 'POST') {
     return Response.json({ error: 'Method Not Allowed' }, { status: 405 });
+  }
+
+  // Kill switch: never invoke the image model while disabled.
+  if (!AI_DESIGN_ENABLED) {
+    return Response.json(
+      { status: 'failed', error: 'AI-ontwerp is tijdelijk niet beschikbaar — we werken aan een verbeterde versie.' },
+      { status: 503 },
+    );
   }
 
   let body = {};
