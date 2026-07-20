@@ -75,7 +75,7 @@ export default function CartAndCheckout({
           </div>
           <h2 className="text-3xl font-black text-ink tracking-tight">Gefeliciteerd, {contactName || 'ondernemer'}!</h2>
           <p className="text-mist text-sm max-w-md mx-auto">
-            Jouw campagne-aanvraag is met succes ontvangen en doorgestuurd naar onze planners. We nemen binnen 4 uur contact met je op.
+            Jouw campagne-aanvraag is met succes ontvangen en doorgestuurd naar onze planners. Je uiting is drukklaar aangeleverd, dus er hoeft niets meer nagekeken te worden — we plannen de plaatsing op de eerstvolgende plaatsingsdag in jouw gemeente en nemen zo snel mogelijk contact met je op.
           </p>
         </div>
 

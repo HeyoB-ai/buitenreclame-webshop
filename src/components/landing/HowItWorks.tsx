@@ -7,7 +7,7 @@ export default function HowItWorks() {
         <div className="head">
           <span className="eyebrow"><span className="pulse" />Zo werkt het</span>
           <h2 className="sec">In drie stappen <em>op straat</em></h2>
-          <p className="lead">Van "ik heb geen idee waar ik moet beginnen" naar een advertentie die mensen zien — meestal al de volgende dag.</p>
+          <p className="lead">Van "ik heb geen idee waar ik moet beginnen" naar een advertentie die mensen zien — drukklaar aangeleverd, klaar voor de eerstvolgende plaatsingsdag in jouw gemeente.</p>
         </div>
         <div className="layout">
           <div className="steps">
