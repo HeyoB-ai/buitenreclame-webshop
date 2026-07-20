@@ -5,10 +5,11 @@
 
 import React, { useState } from 'react';
 import { Location, SessionCreative } from '../types';
-import { X, UploadCloud, Sparkles, CheckCircle2, AlertCircle, RefreshCw, FileText, LayoutTemplate, ShieldCheck, Check, ShieldAlert, Maximize2 } from 'lucide-react';
+import { X, UploadCloud, Sparkles, CheckCircle2, AlertCircle, AlertTriangle, RefreshCw, FileText, LayoutTemplate, ShieldCheck, Check, Maximize2, Info } from 'lucide-react';
 import { startCreative, pollCreative } from '../lib/creativeClient';
 import PosterComposer from './PosterComposer';
 import { posterRatio as getPosterRatio, composeToDataUrl, type PosterFields, type TemplateKey, type ThemeKey } from '../lib/posterComposer';
+import { analyzeUploadForPrint, type PrintCheckResult } from '../lib/printCheck';
 
 interface AICreationModalProps {
   location: Location;
@@ -74,16 +75,11 @@ export default function AICreationModal({
   const [noPhotoMode, setNoPhotoMode] = useState(false); // design a graphic-only poster without generating a photo
   const [isSaving, setIsSaving] = useState(false);
 
-  // Tab 3: AI Verification Checklist state
+  // Tab 3: real technical print-suitability check (drukgeschiktheid), not the
+  // old always-"goedgekeurd" placeholder.
   const [verifyFile, setVerifyFile] = useState<File | null>(null);
   const [isVerifying, setIsVerifying] = useState(false);
-  const [verificationResult, setVerificationResult] = useState<{
-    resolution: boolean;
-    contrast: boolean;
-    density: boolean;
-    restricted: boolean;
-    overall: boolean;
-  } | null>(null);
+  const [verificationResult, setVerificationResult] = useState<PrintCheckResult | null>(null);
 
   // Simulated Upload Flow — but we DO keep the real image (as a data-URL) so the
   // creative actually persists on the cart item and can be reused this session.
@@ -150,25 +146,22 @@ export default function AICreationModal({
     }
   };
 
-  // Simulated Compliance Check Tab
-  const handleVerifyUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Real technical print-suitability check. Measures format, size, aspect-ratio
+  // and effective A0 print resolution — no content/gemeente judgement.
+  const handleVerifyUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
     const file = e.target.files[0];
     setVerifyFile(file);
     setIsVerifying(true);
     setVerificationResult(null);
-
-    setTimeout(() => {
+    try {
+      const result = await analyzeUploadForPrint(file);
+      setVerificationResult(result);
+    } catch {
+      setVerificationResult(null);
+    } finally {
       setIsVerifying(false);
-      // Give random but mostly successful result
-      setVerificationResult({
-        resolution: true,
-        contrast: true,
-        density: true,
-        restricted: true,
-        overall: true
-      });
-    }, 2000);
+    }
   };
 
   // Save selection back to parent. The generate tab needs a headline and either
@@ -220,11 +213,14 @@ export default function AICreationModal({
       }
     } else if (activeTab === 'verify' && verificationResult && verifyFile) {
       onSaveCreative({
-        type: 'verified',
+        type: 'upload',
         fileName: verifyFile.name,
-        verifiedOk: verificationResult.overall,
-        title: 'AI Gecheckte Poster',
-        subtitle: verifyFile.name
+        // Keep the checked image so it persists and can be viewed big (raster only).
+        previewUrl: verificationResult.imageDataUrl,
+        // Honest: this only reflects the technical check, not content approval.
+        verifiedOk: verificationResult.allOk,
+        title: 'Gecontroleerd bestand',
+        subtitle: verifyFile.name,
       });
     }
   };
@@ -290,7 +286,7 @@ export default function AICreationModal({
                 : 'border-transparent text-mist-2 hover:text-ink'
             }`}
           >
-            3. AI-richtlijnencheck
+            3. Controleer je bestand
           </button>
         </div>
 
@@ -539,13 +535,13 @@ export default function AICreationModal({
             </div>
           )}
 
-          {/* TAB 3: AUTOMATED COMPLIANCE CHECK */}
+          {/* TAB 3: REAL TECHNICAL PRINT-SUITABILITY CHECK */}
           {activeTab === 'verify' && (
             <div className="space-y-4">
               <div className="text-center p-8 bg-paper-2 rounded-card border-2 border-dashed border-line hover:border-cobalt transition-all relative">
                 <input
                   type="file"
-                  accept="image/*"
+                  accept="image/png,image/jpeg,image/webp,application/pdf"
                   onChange={handleVerifyUpload}
                   className="absolute inset-0 opacity-0 cursor-pointer"
                   disabled={isVerifying}
@@ -557,8 +553,8 @@ export default function AICreationModal({
                       <LayoutTemplate className="w-6 h-6 text-cobalt" />
                     </div>
                     <div className="space-y-1">
-                      <p className="text-sm font-semibold text-mist">Upload een concept-afbeelding om te laten scannen</p>
-                      <p className="text-xs text-mist-2">Onze AI controleert direct of het voldoet aan de richtlijnen voor {location.city}</p>
+                      <p className="text-sm font-semibold text-mist">Upload je bestand voor een technische controle</p>
+                      <p className="text-xs text-mist-2">We meten formaat, verhouding en resolutie — of het scherp genoeg is voor druk op A0.</p>
                     </div>
                   </div>
                 )}
@@ -566,61 +562,65 @@ export default function AICreationModal({
                 {isVerifying && (
                   <div className="space-y-4 py-4">
                     <RefreshCw className="w-8 h-8 text-cobalt animate-spin mx-auto" />
-                    <p className="text-sm font-medium text-mist">AI controleert contrast en gemeentelijke regelgeving...</p>
+                    <p className="text-sm font-medium text-mist">Bestand controleren op formaat, verhouding en resolutie...</p>
                   </div>
                 )}
 
-                {verifyFile && !isVerifying && (
+                {verifyFile && !isVerifying && verificationResult && (
                   <div className="space-y-3 py-1">
-                    <p className="text-sm font-bold text-ink">Auditrapport: {verifyFile.name}</p>
-                    <div className="text-xs font-semibold text-ok flex items-center justify-center gap-1 bg-ok-soft border border-ok-soft py-1.5 px-3 rounded-card-sm max-w-sm mx-auto">
-                      <ShieldCheck className="w-4 h-4" />
-                      <span>Volledig goedgekeurd voor productie!</span>
-                    </div>
+                    <p className="text-sm font-bold text-ink truncate">{verifyFile.name}</p>
+                    {(() => {
+                      const warn = !verificationResult.allOk;
+                      const cls = warn
+                        ? 'text-amber-deep bg-amber-soft border-amber-line'
+                        : 'text-ok bg-ok-soft border-ok-soft';
+                      const Icon = warn ? AlertTriangle : ShieldCheck;
+                      return (
+                        <div className={`text-xs font-semibold flex items-center justify-center gap-1.5 border py-1.5 px-3 rounded-card-sm max-w-md mx-auto ${cls}`}>
+                          <Icon className="w-4 h-4 shrink-0" />
+                          <span>{verificationResult.summary}</span>
+                        </div>
+                      );
+                    })()}
                     <button
                       type="button"
                       onClick={() => { setVerifyFile(null); setVerificationResult(null); }}
                       className="text-xs text-mist-2 hover:text-ink underline block mx-auto mt-2"
                     >
-                      Ander bestand scannen
+                      Ander bestand controleren
                     </button>
                   </div>
                 )}
               </div>
 
-              {/* Compliance checklist details */}
-              {verifyFile && !isVerifying && (
+              {/* Real, honest checklist — one row per measured item. */}
+              {verifyFile && !isVerifying && verificationResult && (
                 <div className="bg-paper-2 border border-line p-4 rounded-card-sm space-y-3">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-mist-2 block border-b border-line pb-2 font-bold">AI Compliance Analyse Resultaten</span>
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-mist-2 block border-b border-line pb-2 font-bold">Technische controle — drukgeschiktheid A0</span>
 
-                  <div className="space-y-2 text-xs">
-                    <div className="flex justify-between items-center">
-                      <span className="text-mist font-medium">Minimale resolutie check (300 DPI equivalent)</span>
-                      <span className="text-ok font-bold flex items-center gap-1">
-                        <Check className="w-3.5 h-3.5" /> OK
-                      </span>
-                    </div>
+                  <div className="space-y-3 text-xs">
+                    {verificationResult.items.map((item) => {
+                      const Icon = item.status === 'ok' ? Check : item.status === 'warn' ? AlertTriangle : Info;
+                      const tone = item.status === 'ok' ? 'text-ok' : item.status === 'warn' ? 'text-amber-deep' : 'text-mist-2';
+                      return (
+                        <div key={item.key} className="flex items-start gap-2">
+                          <Icon className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${tone}`} />
+                          <div className="min-w-0">
+                            <span className={`font-bold ${tone}`}>{item.label}</span>
+                            <p className="text-mist leading-snug">{item.detail}</p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
 
-                    <div className="flex justify-between items-center">
-                      <span className="text-mist font-medium">Tekstdichtheid audit (max. 30% voor {location.city})</span>
-                      <span className="text-ok font-bold flex items-center gap-1">
-                        <Check className="w-3.5 h-3.5" /> OK (14% gemeten)
-                      </span>
-                    </div>
-
-                    <div className="flex justify-between items-center">
-                      <span className="text-mist font-medium">Contrast en leesbaarheid vanaf 15 meter</span>
-                      <span className="text-ok font-bold flex items-center gap-1">
-                        <Check className="w-3.5 h-3.5" /> OK (Uitstekend contrast)
-                      </span>
-                    </div>
-
-                    <div className="flex justify-between items-center">
-                      <span className="text-mist font-medium">Beleidstoetsing (O.a. alcohol, gokken nabij onderwijs)</span>
-                      <span className="text-ok font-bold flex items-center gap-1">
-                        <Check className="w-3.5 h-3.5" /> OK (Geen restricties overschreden)
-                      </span>
-                    </div>
+                  {/* The honest boundary: technical only, never content approval. */}
+                  <div className="flex items-start gap-2 border-t border-line pt-3 text-[11px] text-mist-2 leading-snug">
+                    <Info className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+                    <span>
+                      Dit is een <b>technische</b> controle (formaat en scherpte). Of de inhoud is toegestaan — denk aan
+                      aanstootgevende of verboden categorieën — beoordeelt ESH en de gemeente, niet deze tool.
+                    </span>
                   </div>
                 </div>
               )}
@@ -644,13 +644,13 @@ export default function AICreationModal({
               isSaving ||
               (activeTab === 'upload' && uploadStatus !== 'completed') ||
               (activeTab === 'generate' && !generateReady) ||
-              (activeTab === 'verify' && !verifyFile)
+              (activeTab === 'verify' && (isVerifying || !verificationResult))
             }
             className={`px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
               !isSaving && (
                 (activeTab === 'upload' && uploadStatus === 'completed') ||
                 (activeTab === 'generate' && generateReady) ||
-                (activeTab === 'verify' && verifyFile))
+                (activeTab === 'verify' && !isVerifying && verificationResult))
                 ? 'bg-cobalt hover:bg-cobalt-deep text-white shadow-soft'
                 : 'bg-paper-2 text-mist-2 cursor-not-allowed border border-line'
             }`}
