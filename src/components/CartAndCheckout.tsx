@@ -142,11 +142,18 @@ export default function CartAndCheckout({
   const editItem = cartItems.find((i) => i.location.id === editLocationId);
   const previewPoster = previewItem?.creative?.poster;
   const editPoster = editItem?.creative?.poster;
+  // An own upload has an image previewUrl but no poster design → show it as a
+  // plain image in the same big view (cover-fitted to A0, safe-zone toggle).
+  const previewUpload =
+    previewItem && !previewPoster && isImageUrl(previewItem.creative?.previewUrl)
+      ? previewItem.creative?.previewUrl
+      : undefined;
 
   return (
     <div className="space-y-6">
-      {/* Beeldvullend bekijken — the poster at the size it deserves, with the
-          safe-zone guide switchable so you can see the real print. */}
+      {/* Beeldvullend bekijken — the creative at the size it deserves, with the
+          safe-zone guide switchable so you can see the real print. Works for a
+          composed poster (edit-capable) and for a plain own upload. */}
       {previewItem && previewPoster && (
         <PosterPreviewOverlay
           ratio={posterRatio()}
@@ -159,6 +166,15 @@ export default function CartAndCheckout({
             setEditLocationId(previewItem.location.id);
             setPreviewLocationId(null);
           }}
+          onClose={() => setPreviewLocationId(null)}
+        />
+      )}
+      {previewItem && previewUpload && (
+        <PosterPreviewOverlay
+          ratio={posterRatio()}
+          imageUrl={previewUpload}
+          title={previewItem.creative?.title || 'Eigen upload'}
+          caption={`${previewItem.location.street}, ${previewItem.location.city}`}
           onClose={() => setPreviewLocationId(null)}
         />
       )}
@@ -256,21 +272,19 @@ export default function CartAndCheckout({
                   {/* Middle section: Creative status */}
                   <div className="bg-paper-2 p-3 rounded-card-sm border border-line-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs">
                     <div className="flex items-center gap-3 min-w-0">
-                      {/* Poster thumbnail for any creative that carries an image */}
+                      {/* Thumbnail for any creative that carries an image — a
+                          composed poster OR an own upload; both open the big view. */}
                       {item.creative?.previewUrl && isImageUrl(item.creative.previewUrl) ? (
                         <button
                           type="button"
-                          onClick={item.creative.poster ? () => setPreviewLocationId(item.location.id) : undefined}
-                          disabled={!item.creative.poster}
-                          title={item.creative.poster ? 'Groot bekijken' : item.creative.title}
-                          className="group relative w-11 h-16 shrink-0 rounded-md overflow-hidden shadow ring-1 ring-black/5 bg-paper-2 cursor-zoom-in disabled:cursor-default"
+                          onClick={() => setPreviewLocationId(item.location.id)}
+                          title="Groot bekijken"
+                          className="group relative w-11 h-16 shrink-0 rounded-md overflow-hidden shadow ring-1 ring-black/5 bg-paper-2 cursor-zoom-in"
                           style={{ backgroundImage: `url("${item.creative.previewUrl}")`, backgroundSize: 'cover', backgroundPosition: 'center' }}
                         >
-                          {item.creative.poster && (
-                            <span className="absolute inset-0 bg-black/0 group-hover:bg-black/30 flex items-center justify-center transition-colors">
-                              <Maximize2 className="w-3 h-3 text-white opacity-0 group-hover:opacity-100" />
-                            </span>
-                          )}
+                          <span className="absolute inset-0 bg-black/0 group-hover:bg-black/30 flex items-center justify-center transition-colors">
+                            <Maximize2 className="w-3 h-3 text-white opacity-0 group-hover:opacity-100" />
+                          </span>
                         </button>
                       ) : (
                         <FileText className={`w-4 h-4 shrink-0 ${item.creative ? 'text-ok' : 'text-amber-deep'}`} />
@@ -289,25 +303,27 @@ export default function CartAndCheckout({
                     </div>
 
                     <div className="flex items-center gap-2 shrink-0">
+                      {/* Big view for any image creative (poster or own upload). */}
+                      {item.creative?.previewUrl && isImageUrl(item.creative.previewUrl) && (
+                        <button
+                          onClick={() => setPreviewLocationId(item.location.id)}
+                          title="De uiting beeldvullend bekijken"
+                          className="px-3 py-1.5 rounded-full font-bold text-[11px] cursor-pointer transition-all bg-cobalt-soft hover:bg-white text-cobalt border border-cobalt-soft flex items-center gap-1"
+                        >
+                          <Maximize2 className="w-3 h-3 shrink-0" />
+                          <span>Groot bekijken</span>
+                        </button>
+                      )}
+                      {/* Editing is only for AI posters (a composer design). */}
                       {item.creative?.poster && (
-                        <>
-                          <button
-                            onClick={() => setPreviewLocationId(item.location.id)}
-                            title="De poster beeldvullend bekijken"
-                            className="px-3 py-1.5 rounded-full font-bold text-[11px] cursor-pointer transition-all bg-cobalt-soft hover:bg-white text-cobalt border border-cobalt-soft flex items-center gap-1"
-                          >
-                            <Maximize2 className="w-3 h-3 shrink-0" />
-                            <span>Groot bekijken</span>
-                          </button>
-                          <button
-                            onClick={() => setEditLocationId(item.location.id)}
-                            title="Tekst, sjabloon en kleur aanpassen"
-                            className="px-3 py-1.5 rounded-full font-bold text-[11px] cursor-pointer transition-all bg-white hover:bg-paper-2 text-mist border border-line shadow-soft flex items-center gap-1"
-                          >
-                            <Pencil className="w-3 h-3 shrink-0" />
-                            <span>Aanpassen</span>
-                          </button>
-                        </>
+                        <button
+                          onClick={() => setEditLocationId(item.location.id)}
+                          title="Tekst, sjabloon en kleur aanpassen"
+                          className="px-3 py-1.5 rounded-full font-bold text-[11px] cursor-pointer transition-all bg-white hover:bg-paper-2 text-mist border border-line shadow-soft flex items-center gap-1"
+                        >
+                          <Pencil className="w-3 h-3 shrink-0" />
+                          <span>Aanpassen</span>
+                        </button>
                       )}
                       {item.creative?.previewUrl && cartItems.length > 1 && (
                         <button

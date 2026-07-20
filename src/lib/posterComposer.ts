@@ -614,6 +614,28 @@ function drawSafeGuide(ctx: CanvasRenderingContext2D, W: number, H: number, safe
   ctx.restore();
 }
 
+/**
+ * Draw an uploaded image cover-fitted into the A0 frame, optionally with the
+ * safe-zone guide — so an own-supplied poster can be judged large, exactly as it
+ * will be placed (same cover-crop as the print). No poster design involved.
+ */
+export function drawUploadCover(
+  ctx: CanvasRenderingContext2D,
+  o: { W: number; H: number; img: HTMLImageElement | null; ratio?: Ratio; guides?: boolean },
+) {
+  const ratio = o.ratio ?? A0;
+  ctx.clearRect(0, 0, o.W, o.H);
+  if (o.img) {
+    const ir = o.img.width / o.img.height;
+    const r = o.W / o.H;
+    let dw: number, dh: number, dx: number, dy: number;
+    if (ir > r) { dh = o.H; dw = o.H * ir; dx = (o.W - dw) / 2; dy = 0; }
+    else { dw = o.W; dh = o.W / ir; dx = 0; dy = (o.H - dh) / 2; }
+    ctx.drawImage(o.img, dx, dy, dw, dh);
+  }
+  if (o.guides) drawSafeGuide(ctx, o.W, o.H, safeInsetsPx(ratio, o.W));
+}
+
 export function drawPoster(ctx: CanvasRenderingContext2D, o: DrawArgs) {
   const theme = THEMES.find((t) => t.key === o.theme) ?? THEMES[0];
   const onBg = readableOn(theme.bg);
