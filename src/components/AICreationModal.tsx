@@ -12,6 +12,14 @@ import { posterRatio as getPosterRatio, composeToDataUrl, type PosterFields, typ
 import { analyzeUploadForPrint, type PrintCheckResult } from '../lib/printCheck';
 import PrintCheckReport from './PrintCheckReport';
 
+/**
+ * TEMPORARY KILL SWITCH — the current image model (Soul) produced inappropriate
+ * output and must not run. While false, the "Laat AI ontwerpen" tab shows a
+ * notice and no generation is triggered. Flip back to true only once a safe
+ * image model is in place. (The server has its own matching switch as a net.)
+ */
+const AI_DESIGN_ENABLED = false;
+
 interface AICreationModalProps {
   location: Location;
   onClose: () => void;
@@ -107,6 +115,7 @@ export default function AICreationModal({
   // AI background generation — 3 textless variants via the Netlify Functions.
   const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!AI_DESIGN_ENABLED) return; // safety: no generation while disabled
     if (!prompt.trim() || isGenerating) return;
 
     setIsGenerating(true);
@@ -369,8 +378,8 @@ export default function AICreationModal({
             </div>
           )}
 
-          {/* TAB 2: AI GENERATE POSTERS */}
-          {activeTab === 'generate' && (
+          {/* TAB 2: AI GENERATE POSTERS — temporarily disabled (unsafe image model) */}
+          {activeTab === 'generate' && (AI_DESIGN_ENABLED ? (
             <div className="space-y-5">
               <form onSubmit={handleGenerate} className="space-y-3">
                 <label className="block text-xs font-semibold text-mist">
@@ -507,7 +516,21 @@ export default function AICreationModal({
                 </div>
               )}
             </div>
-          )}
+          ) : (
+            /* Temporary notice while AI design is disabled. */
+            <div className="text-center p-8 bg-paper-2 rounded-card border-2 border-dashed border-line space-y-3">
+              <div className="w-12 h-12 bg-amber-soft rounded-full flex items-center justify-center mx-auto border border-amber-line">
+                <Sparkles className="w-6 h-6 text-amber-deep" />
+              </div>
+              <div className="space-y-1">
+                <p className="text-sm font-bold text-ink">AI-ontwerp is tijdelijk niet beschikbaar</p>
+                <p className="text-xs text-mist max-w-sm mx-auto leading-relaxed">
+                  We werken aan een verbeterde versie. Gebruik zolang <b>Upload eigen bestand</b> om je eigen
+                  creatie aan te leveren, of <b>Controleer je bestand</b> om het op drukgeschiktheid te checken.
+                </p>
+              </div>
+            </div>
+          ))}
 
           {/* TAB 3: REAL TECHNICAL PRINT-SUITABILITY CHECK */}
           {activeTab === 'verify' && (
