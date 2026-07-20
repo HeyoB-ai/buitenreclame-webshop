@@ -393,7 +393,7 @@ export default function AICreationModal({
                 <ul className="text-xs text-mist space-y-1 list-disc pl-4 leading-relaxed">
                   <li><strong>Papierformaat:</strong> Hou rekening met een snijmarge van 5mm rondom.</li>
                   <li><strong>Contrast:</strong> Onze systemen adviseren een minimale tekst-achtergrond contrastverhouding van 4.5:1.</li>
-                  <li><strong>Levertijd:</strong> Dit bestand wordt handmatig goedgekeurd binnen 24 uur.</li>
+                  <li><strong>Aanlevering:</strong> Lever je materiaal uiterlijk 21 dagen voor de plaatsingsdag aan — elke gemeente heeft een vaste dag.</li>
                 </ul>
               </div>
             </div>
