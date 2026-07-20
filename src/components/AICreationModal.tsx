@@ -5,11 +5,12 @@
 
 import React, { useState } from 'react';
 import { Location, SessionCreative } from '../types';
-import { X, UploadCloud, Sparkles, CheckCircle2, AlertCircle, AlertTriangle, RefreshCw, FileText, LayoutTemplate, ShieldCheck, Check, Maximize2, Info } from 'lucide-react';
+import { X, UploadCloud, Sparkles, AlertCircle, RefreshCw, LayoutTemplate, Check } from 'lucide-react';
 import { startCreative, pollCreative } from '../lib/creativeClient';
 import PosterComposer from './PosterComposer';
 import { posterRatio as getPosterRatio, composeToDataUrl, type PosterFields, type TemplateKey, type ThemeKey } from '../lib/posterComposer';
 import { analyzeUploadForPrint, type PrintCheckResult } from '../lib/printCheck';
+import PrintCheckReport from './PrintCheckReport';
 
 interface AICreationModalProps {
   location: Location;
@@ -54,8 +55,8 @@ export default function AICreationModal({
   // Tab 1: Upload state
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploadDataUrl, setUploadDataUrl] = useState<string | null>(null); // the actual image, kept in-memory
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'analyzing' | 'completed'>('idle');
+  const [uploadStatus, setUploadStatus] = useState<'idle' | 'analyzing' | 'completed'>('idle');
+  const [uploadCheck, setUploadCheck] = useState<PrintCheckResult | null>(null);
 
   // Tab 2: AI Design state (3 textless background variants to choose from)
   const [prompt, setPrompt] = useState('');
@@ -81,38 +82,26 @@ export default function AICreationModal({
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationResult, setVerificationResult] = useState<PrintCheckResult | null>(null);
 
-  // Simulated Upload Flow — but we DO keep the real image (as a data-URL) so the
-  // creative actually persists on the cart item and can be reused this session.
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Real upload flow: run the SAME technical print-check as tab 3 and keep the
+  // decoded image so the creative persists / is reusable this session. No fake
+  // progress, no automatic "goedgekeurd".
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
     const file = e.target.files[0];
     setUploadFile(file);
     setUploadDataUrl(null);
-    if (/^image\//.test(file.type)) {
-      const reader = new FileReader();
-      reader.onload = () => setUploadDataUrl(String(reader.result));
-      reader.readAsDataURL(file);
+    setUploadCheck(null);
+    setUploadStatus('analyzing');
+    try {
+      const result = await analyzeUploadForPrint(file);
+      setUploadCheck(result);
+      // Raster files come back decoded as a data-URL; a PDF has no image preview.
+      setUploadDataUrl(result.imageDataUrl ?? null);
+    } catch {
+      setUploadCheck(null);
+    } finally {
+      setUploadStatus('completed');
     }
-    setUploadStatus('uploading');
-    setUploadProgress(10);
-
-    // Simulated network upload progress
-    const interval = setInterval(() => {
-      setUploadProgress((prev) => {
-        if (prev < 90) {
-          return prev + 20;
-        } else {
-          clearInterval(interval);
-          setUploadStatus('analyzing');
-
-          // Simulated "Deep spec check"
-          setTimeout(() => {
-            setUploadStatus('completed');
-          }, 1200);
-          return 100;
-        }
-      });
-    }, 200);
   };
 
   // AI background generation — 3 textless variants via the Netlify Functions.
@@ -175,7 +164,8 @@ export default function AICreationModal({
         type: 'upload',
         fileName: uploadFile.name,
         previewUrl: uploadDataUrl ?? undefined, // keep the real image so it persists + is reusable
-        verifiedOk: true,
+        // Honest: reflects the real technical check, not a blanket "approved".
+        verifiedOk: uploadCheck ? uploadCheck.allOk : undefined,
         title: 'Eigen upload',
         subtitle: uploadFile.name,
       });
@@ -325,10 +315,10 @@ export default function AICreationModal({
               <div className="text-center p-8 bg-paper-2 rounded-card border-2 border-dashed border-line hover:border-cobalt transition-all relative">
                 <input
                   type="file"
-                  accept="image/*,application/pdf"
+                  accept="image/png,image/jpeg,image/webp,application/pdf"
                   onChange={handleFileUpload}
                   className="absolute inset-0 opacity-0 cursor-pointer"
-                  disabled={uploadStatus === 'uploading' || uploadStatus === 'analyzing'}
+                  disabled={uploadStatus === 'analyzing'}
                 />
 
                 {uploadStatus === 'idle' && (
@@ -343,38 +333,19 @@ export default function AICreationModal({
                   </div>
                 )}
 
-                {(uploadStatus === 'uploading' || uploadStatus === 'analyzing') && (
+                {uploadStatus === 'analyzing' && (
                   <div className="space-y-4 py-4">
                     <RefreshCw className="w-8 h-8 text-cobalt animate-spin mx-auto" />
-                    <div className="space-y-2">
-                      <p className="text-sm font-medium text-mist">
-                        {uploadStatus === 'uploading' ? 'Uploaden...' : 'Controleren op aanleverspecificaties...'}
-                      </p>
-                      <div className="w-48 h-1 bg-line rounded-full mx-auto overflow-hidden">
-                        <div
-                          className="h-full bg-cobalt transition-all duration-300"
-                          style={{ width: `${uploadProgress}%` }}
-                        />
-                      </div>
-                    </div>
+                    <p className="text-sm font-medium text-mist">Bestand controleren op formaat, verhouding en resolutie...</p>
                   </div>
                 )}
 
                 {uploadStatus === 'completed' && uploadFile && (
-                  <div className="space-y-4 py-2">
-                    <div className="w-12 h-12 bg-ok-soft rounded-full flex items-center justify-center mx-auto border border-ok-soft">
-                      <CheckCircle2 className="w-6 h-6 text-ok" />
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-sm font-bold text-ink">{uploadFile.name}</p>
-                      <p className="text-xs text-ok flex items-center justify-center gap-1 font-semibold">
-                        <ShieldCheck className="w-3.5 h-3.5" />
-                        <span>Bestand met succes gevalideerd! Voldoet aan alle specificaties.</span>
-                      </p>
-                    </div>
+                  <div className="space-y-3 py-1">
+                    <p className="text-sm font-bold text-ink truncate">{uploadFile.name}</p>
                     <button
                       type="button"
-                      onClick={() => { setUploadFile(null); setUploadStatus('idle'); }}
+                      onClick={() => { setUploadFile(null); setUploadStatus('idle'); setUploadCheck(null); setUploadDataUrl(null); }}
                       className="text-xs text-mist-2 hover:text-ink underline font-medium"
                     >
                       Ander bestand uploaden
@@ -382,6 +353,9 @@ export default function AICreationModal({
                   </div>
                 )}
               </div>
+
+              {/* Real technical check result — the same honest report as tab 3. */}
+              {uploadStatus === 'completed' && uploadCheck && <PrintCheckReport result={uploadCheck} />}
 
               {/* Tips list */}
               <div className="bg-paper-2 p-4 rounded-card-sm border border-line space-y-2.5">
@@ -569,19 +543,6 @@ export default function AICreationModal({
                 {verifyFile && !isVerifying && verificationResult && (
                   <div className="space-y-3 py-1">
                     <p className="text-sm font-bold text-ink truncate">{verifyFile.name}</p>
-                    {(() => {
-                      const warn = !verificationResult.allOk;
-                      const cls = warn
-                        ? 'text-amber-deep bg-amber-soft border-amber-line'
-                        : 'text-ok bg-ok-soft border-ok-soft';
-                      const Icon = warn ? AlertTriangle : ShieldCheck;
-                      return (
-                        <div className={`text-xs font-semibold flex items-center justify-center gap-1.5 border py-1.5 px-3 rounded-card-sm max-w-md mx-auto ${cls}`}>
-                          <Icon className="w-4 h-4 shrink-0" />
-                          <span>{verificationResult.summary}</span>
-                        </div>
-                      );
-                    })()}
                     <button
                       type="button"
                       onClick={() => { setVerifyFile(null); setVerificationResult(null); }}
@@ -593,37 +554,8 @@ export default function AICreationModal({
                 )}
               </div>
 
-              {/* Real, honest checklist — one row per measured item. */}
-              {verifyFile && !isVerifying && verificationResult && (
-                <div className="bg-paper-2 border border-line p-4 rounded-card-sm space-y-3">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-mist-2 block border-b border-line pb-2 font-bold">Technische controle — drukgeschiktheid A0</span>
-
-                  <div className="space-y-3 text-xs">
-                    {verificationResult.items.map((item) => {
-                      const Icon = item.status === 'ok' ? Check : item.status === 'warn' ? AlertTriangle : Info;
-                      const tone = item.status === 'ok' ? 'text-ok' : item.status === 'warn' ? 'text-amber-deep' : 'text-mist-2';
-                      return (
-                        <div key={item.key} className="flex items-start gap-2">
-                          <Icon className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${tone}`} />
-                          <div className="min-w-0">
-                            <span className={`font-bold ${tone}`}>{item.label}</span>
-                            <p className="text-mist leading-snug">{item.detail}</p>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  {/* The honest boundary: technical only, never content approval. */}
-                  <div className="flex items-start gap-2 border-t border-line pt-3 text-[11px] text-mist-2 leading-snug">
-                    <Info className="w-3.5 h-3.5 mt-0.5 shrink-0" />
-                    <span>
-                      Dit is een <b>technische</b> controle (formaat en scherpte). Of de inhoud is toegestaan — denk aan
-                      aanstootgevende of verboden categorieën — beoordeelt ESH en de gemeente, niet deze tool.
-                    </span>
-                  </div>
-                </div>
-              )}
+              {/* Real technical check result — the same honest report as tab 1. */}
+              {verifyFile && !isVerifying && verificationResult && <PrintCheckReport result={verificationResult} />}
             </div>
           )}
 
