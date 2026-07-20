@@ -12,35 +12,51 @@
 
 import { useEffect, useState } from 'react';
 import { X, Ruler, Pencil } from 'lucide-react';
-import PosterCanvas, { useLoadedImage } from './PosterCanvas';
+import PosterCanvas, { ImagePreviewCanvas, useLoadedImage } from './PosterCanvas';
 import type { PosterFields, TemplateKey, ThemeKey, Ratio } from '../lib/posterComposer';
 
 /** Drawing buffer for the big view: comfortably above any real display size, so
  *  CSS only ever scales it down (sharp), never up (blurry). */
 const RENDER_W = 1100;
 
+/**
+ * Two modes:
+ *  - a composed poster design (fields/template/theme/photoUrl), or
+ *  - a plain uploaded image (imageUrl) — an own-supplied creative, shown
+ *    cover-fitted into the A0 frame so it can be judged large before print.
+ * `imageUrl` decides the mode.
+ */
 interface Props {
   ratio: Ratio;
-  fields: PosterFields;
-  template: TemplateKey;
-  theme: ThemeKey;
-  photoUrl: string | null;
   /** Caption under the poster (e.g. street + city). */
   caption?: string;
-  /** Shown when the viewer may jump straight into editing. */
+  /** Shown when the viewer may jump straight into editing (poster mode only). */
   onEdit?: () => void;
   onClose: () => void;
+
+  // Poster mode:
+  fields?: PosterFields;
+  template?: TemplateKey;
+  theme?: ThemeKey;
+  photoUrl?: string | null;
+
+  // Upload mode:
+  imageUrl?: string | null;
+  /** Title shown in the top bar (upload mode has no headline field). */
+  title?: string;
 }
 
 export default function PosterPreviewOverlay({
-  ratio, fields, template, theme, photoUrl, caption, onEdit, onClose,
+  ratio, fields, template, theme, photoUrl, imageUrl, title, caption, onEdit, onClose,
 }: Props) {
   // Default ON: the guide is what most people come here to check. Toggling it
   // off answers "how does it really come out?".
   const [showGuides, setShowGuides] = useState(true);
 
-  const photo = useLoadedImage(photoUrl);
-  const logo = useLoadedImage(fields.logo);
+  const isUpload = Boolean(imageUrl);
+  const photo = useLoadedImage(isUpload ? imageUrl ?? null : photoUrl ?? null);
+  const logo = useLoadedImage(fields?.logo ?? null);
+  const barTitle = title?.trim() || fields?.headline?.trim() || 'Poster';
 
   // Esc closes; while open the page behind must not scroll.
   useEffect(() => {
@@ -71,7 +87,7 @@ export default function PosterPreviewOverlay({
       <div className="relative shrink-0 flex items-center justify-between gap-3 p-3 sm:p-4">
         <div className="min-w-0">
           <p className="text-xs sm:text-sm font-bold text-white truncate">
-            {fields.headline?.trim() || 'Poster'}
+            {barTitle}
           </p>
           <p className="text-[10px] sm:text-[11px] font-mono text-white/60 truncate">
             {ratio.label}
@@ -128,18 +144,28 @@ export default function PosterPreviewOverlay({
           `pointer-events-none` lets clicks beside the poster reach the backdrop,
           while the canvas itself takes its clicks back and stays put. */}
       <div className="relative flex-1 min-h-0 flex items-center justify-center px-3 pb-3 sm:px-6 sm:pb-6 pointer-events-none">
-        <PosterCanvas
-          width={RENDER_W}
-          ratio={ratio}
-          fields={fields}
-          template={template}
-          theme={theme}
-          photo={photo}
-          logo={logo}
-          guides={showGuides}
-          // The buffer's own ratio gives the shape; max-h/max-w only shrink it.
-          className="block h-auto w-auto max-h-full max-w-full rounded-md shadow-2xl ring-1 ring-white/10 pointer-events-auto"
-        />
+        {/* The buffer's own ratio gives the shape; max-h/max-w only shrink it. */}
+        {isUpload || !fields || !template || !theme ? (
+          <ImagePreviewCanvas
+            width={RENDER_W}
+            ratio={ratio}
+            photo={photo}
+            guides={showGuides}
+            className="block h-auto w-auto max-h-full max-w-full rounded-md shadow-2xl ring-1 ring-white/10 pointer-events-auto"
+          />
+        ) : (
+          <PosterCanvas
+            width={RENDER_W}
+            ratio={ratio}
+            fields={fields}
+            template={template}
+            theme={theme}
+            photo={photo}
+            logo={logo}
+            guides={showGuides}
+            className="block h-auto w-auto max-h-full max-w-full rounded-md shadow-2xl ring-1 ring-white/10 pointer-events-auto"
+          />
+        )}
       </div>
 
       {/* ---------- FOOTER HINT ---------- */}

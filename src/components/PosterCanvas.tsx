@@ -11,6 +11,7 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   drawPoster,
+  drawUploadCover,
   ensureFonts,
   loadImage,
   type PosterFields,
@@ -74,6 +75,37 @@ export default function PosterCanvas({
     })();
     return () => { cancelled = true; };
   }, [width, ratio, fields, template, theme, photo, logo, guides]);
+
+  return <canvas ref={ref} className={className} />;
+}
+
+/**
+ * Same buffer-sizing contract as PosterCanvas, but paints an uploaded image
+ * cover-fitted into the A0 frame (with an optional safe-zone guide) instead of a
+ * poster design. Lets an own-supplied creative be judged large.
+ */
+export function ImagePreviewCanvas({
+  width, ratio, photo, guides = false, className = 'w-full h-auto block',
+}: {
+  width: number;
+  ratio: Ratio;
+  photo: HTMLImageElement | null;
+  guides?: boolean;
+  className?: string;
+}) {
+  const ref = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = ref.current;
+    if (!canvas) return;
+    const W = width;
+    const H = Math.round((width * ratio.h) / ratio.w);
+    canvas.width = W;
+    canvas.height = H;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    drawUploadCover(ctx, { W, H, img: photo, ratio, guides });
+  }, [width, ratio, photo, guides]);
 
   return <canvas ref={ref} className={className} />;
 }
