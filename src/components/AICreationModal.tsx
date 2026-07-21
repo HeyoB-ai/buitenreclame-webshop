@@ -13,12 +13,11 @@ import { analyzeUploadForPrint, type PrintCheckResult } from '../lib/printCheck'
 import PrintCheckReport from './PrintCheckReport';
 
 /**
- * TEMPORARY KILL SWITCH — the current image model (Soul) produced inappropriate
- * output and must not run. While false, the "Laat AI ontwerpen" tab shows a
- * notice and no generation is triggered. Flip back to true only once a safe
- * image model is in place. (The server has its own matching switch as a net.)
+ * Master switch for the AI-design tab. Now TRUE: the unsafe Soul model has been
+ * replaced by OpenAI gpt-image-2 (real safety moderation). Set false to hard-
+ * disable the tab (it then shows a notice); the server has a matching switch.
  */
-const AI_DESIGN_ENABLED = false;
+const AI_DESIGN_ENABLED = true;
 
 interface AICreationModalProps {
   location: Location;
@@ -129,11 +128,11 @@ export default function AICreationModal({
       // number from its answer rather than hard-coding one here.
       const { jobId, variants } = await startCreative(prompt, posterRatio.aspect);
       const what = variants > 0 ? `${variants} achtergronden` : 'je achtergronden';
-      // Measured live: ~45-60s. Show the seconds ticking so a slow run reads as
-      // "busy" rather than "stuck".
-      setGenerationStep(`AI maakt ${what} (dit duurt ~45-60s)...`);
+      // Measured live on gpt-image-2: ~50-70s. Show the seconds ticking so a slow
+      // run reads as "busy" rather than "stuck".
+      setGenerationStep(`AI maakt ${what} (dit duurt ~50-70s)...`);
       const imageUrls = await pollCreative(jobId, (elapsed) => {
-        setGenerationStep(`AI maakt ${what}... ${elapsed}s (meestal ~45-60s)`);
+        setGenerationStep(`AI maakt ${what}... ${elapsed}s (meestal ~50-70s)`);
       });
       setGeneratedImages(imageUrls);
       setSelectedImage(imageUrls[0] ?? null);
